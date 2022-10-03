@@ -34,6 +34,8 @@ executable game-project
                     , gloss
                     , random
     other-modules:    Model
+                    , Model.Entities
+                    , Model.Menus
                     , Controller
                     , View
     hs-source-dirs:   app

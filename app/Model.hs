@@ -2,48 +2,30 @@ module Model where
 
 import Data.Map
 
+import Model.Entities (EntityHeap, Position)
+import Model.Menus (MenuState)
+
 foo :: IO ()
 foo = putStrLn "foo function in Model"
 
 data GameState = Gamestate {
-    menustate :: MenuState,
-    maze :: Maze,
-    score :: Score
-    }
-
-data MenuState = PauseMenu | StartMenu | Playing
+  menustate :: MenuState,
+  maze :: Maze,
+  score :: Score,
+  entities :: EntityHeap
+  }
 
 type Score = Int
 
-type Maze = Map Location (Maybe Entity)
+type Maze = Map Position TileContent
 
-data Location = MkLocation {xposition:: Int,yposition::Int}
-  deriving (Eq, Ord)
+data ContainsEnemy = DoesContainEnemy | DoesntContainEnemy 
 
-data Direction = North | South | East | West 
+data ContainsPlayerOrCollectible = DoesContainPlayer 
+                                 | DoesContainCollectible
+                                 | DoesntContainEither
 
-data Entity = Agent | Collectible | Wall
-
-class Positioned a where
-  getPosition :: a -> Location
-  setPosition :: a -> Location -> a
-
-class (Positioned a) => Agent a where
-  getDirection :: a -> Direction
-  setDirection :: a -> Direction -> a
-
-
-
-data PowerState = PoweredUp | Weak
-
-data PlayerEntity = MkPlayer {
-  location :: Location,
-  movementDirection :: Direction,
-  powerState :: PowerState
-}
-
-
-
-data EnemyEntity = MkEnemy {
-
-}
+data TileContent = Wall | NotWall (ContainsEnemy, ContainsPlayerOrCollectible)
+{-
+This datastructure to prevent non-accesible states from being represented
+-}
