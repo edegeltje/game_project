@@ -36,6 +36,7 @@ executable game-project
     other-modules:    Model
                     , Model.Entities
                     , Model.Menus
+                    , Model.Settings
                     , Controller
                     , View
     hs-source-dirs:   app
