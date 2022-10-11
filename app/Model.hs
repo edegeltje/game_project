@@ -15,6 +15,7 @@ data GameState = Gamestate {
   level :: Int,
   entities :: EntityRecord,
   inputBuffer :: InputBuffer
+  settings :: Settings
   }
 
 type Score = Int
