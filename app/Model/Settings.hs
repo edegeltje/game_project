@@ -1,5 +1,7 @@
 module Model.Settings where
-data Settings = Undefined
+data Settings = Settings{
+  volume :: Int
+}
   -- something something sound volume?
   -- something something keybindings?
   -- something something fullscreen?
