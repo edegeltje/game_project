@@ -9,18 +9,11 @@ data Direction = North | South | East | West
 class Positioned a where
   getPosition :: a -> Position
 
-data EntityHeap = MkEntityHeap {
+data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,
   enemies :: [EnemyEntity],
-  dots :: [Dot]--,
---  fruits :: [Fruits]
+  fruits :: [Fruit]
 }
-
-data Dot = SmallDot Position | PowerDot Position
-
-instance Positioned Dot where 
-  getPosition (SmallDot a) = a
-  getPosition (PowerDot a) = a
 
 class (Positioned a) => Agent a where
   setPosition :: a -> Position -> a
@@ -42,9 +35,9 @@ instance Agent PlayerEntity where
   getDirection player = playerMovementDirection player
   setDirection player newDirection = player {playerMovementDirection = newDirection}
 
-data EnemyMovementType = RedGhost | OrangeGhost | CyanGhost | PinkGhost
+data EnemyMovementType = Blinky | Inky | Pinky | Clyde
 
-data EnemyStatus = Alive | Dead
+data EnemyStatus = Alive | Dead | Scared
 
 data EnemyEntity = MkEnemy {
   enemyPosition :: Position,
@@ -52,3 +45,12 @@ data EnemyEntity = MkEnemy {
   enemyMovementType :: EnemyMovementType,
   enemyStatus :: EnemyStatus
 }
+
+data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
+data Fruit = MkFruit {
+  fruitType :: FruitType,
+  fruitPosition :: Position
+}
+
+instance Positioned Fruit where
+  getPosition fruit = fruitPosition fruit

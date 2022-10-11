@@ -2,7 +2,7 @@ module Model where
 
 import Data.Map
 
-import Model.Entities (EntityHeap, Position)
+import Model.Entities (EntityRecord, Position)
 import Model.Menus (MenuState)
 
 foo :: IO ()
@@ -10,22 +10,20 @@ foo = putStrLn "foo function in Model"
 
 data GameState = Gamestate {
   menustate :: MenuState,
-  maze :: Maze,
+  maze :: BottomLayer,
   score :: Score,
-  entities :: EntityHeap
+  level :: Int,
+  entities :: EntityRecord,
+  inputBuffer :: InputBuffer
   }
 
 type Score = Int
 
-type Maze = Map Position TileContent
+type BottomLayer = Map Position BottomLayerContent
 
-data ContainsEnemy = DoesContainEnemy | DoesntContainEnemy 
+data InputBuffer = Neutral | Up | Down | Left | Right
 
-data ContainsPlayerOrCollectible = DoesContainPlayer 
-                                 | DoesContainCollectible
-                                 | DoesntContainEither
-
-data TileContent = Wall | NotWall (ContainsEnemy, ContainsPlayerOrCollectible)
+data BottomLayerContent = Wall | SmallDot | Bigdot | Empty
 {-
 This datastructure to prevent non-accesible states from being represented
 -}
