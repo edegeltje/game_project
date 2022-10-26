@@ -8,7 +8,7 @@ import Model.Menus (MenuState)
 foo :: IO ()
 foo = putStrLn "foo function in Model"
 
-data GameState = Gamestate {
+data GameState = MkGameState {
   menustate :: MenuState,
   maze :: BottomLayer,
   score :: Score,
