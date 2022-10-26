@@ -15,7 +15,10 @@ pacmanClosed = pictures [color yellow (circleSolid 80), translate 25 25 (color b
 
 openingtime = 0.40
 pacmanOpenMouth :: Float -> PacmanPicture
-pacmanOpenMouth time = color yellow (arcSolid halfAngle (360 - halfAngle) 80) where
+pacmanOpenMouth = rotate 180 . pacmanOpenMouth'
+
+pacmanOpenMouth' :: Float -> PacmanPicture
+pacmanOpenMouth' time = color yellow (arcSolid halfAngle (-halfAngle) 80) where
   halfMaxAngle = 45
   halfAngle = halfMaxAngle * openPercent
   openPercent = abs(sin (time * pi / openingtime))
@@ -73,7 +76,8 @@ data ConstantSprites = MkCSprites{
     melonSprite :: MelonPicture,
     galaxianSprite :: GalaxianPicture,
     bellSprite :: BellPicture,
-    keySprite :: KeyPicture
+    keySprite :: KeyPicture,
+    wallSprite :: WallPicture
 }
 data Sprites = MkSprites {
   constantSprites :: ConstantSprites,
@@ -91,8 +95,36 @@ animateSprites gamestate time = MkASprites
 animatePacman :: GameState -> Float -> PacmanPicture
 animatePacman gs@(MkGameState _ _ _ _ (MkEntityRecord (MkPlayer _ dir _) _ _) _ _) time = rotate (playerToDir dir) (pictures [color yellow (circleSolid 80), arcSolid (180 + 30 * abs(sin (3 * time))) (180 -  30 * abs(sin (3 * time))) 80])
 
+dirToAngle :: Direction -> Float
+dirToAngle North = 90
+dirToAngle East  = 0
+dirToAngle South = 270
+dirToAngle West  = 180 
+
+rotateSpriteToDir :: Direction -> Picture -> Picture
+rotateSpriteToDir = rotate . dirToAngle
+
+animatePacman' :: GameState -> Float -> PacmanPicture
+
+animatePacman' gamestate time = rotateSpriteToDir dir $ pacmanOpenMouth time where
+  dir = getDirection $ player $ entities gamestate
+
+
 testGameState :: GameState
-testGameState = MkGameState Playing Data.Map.empty 0 1 (MkEntityRecord (MkPlayer (MkPosition 0 0) South Weak) [] []) Neutral (Settings 0)
+testGameState = MkGameState 
+  Playing 
+  Data.Map.empty 
+  0 
+  1 
+  (MkEntityRecord 
+    (MkPlayer 
+      (MkPosition 0 0) 
+      South 
+      Weak)
+    []
+    []) 
+  Neutral 
+  (Settings 0)
 
 playerToDir :: Direction -> Float
 playerToDir North = 90
@@ -112,6 +144,6 @@ animatePinky = undefined
 animateClyde :: GameState -> Float -> ClydePicture
 animateClyde = undefined
 
-wallSprite :: Point -> WallPicture
-wallSprite (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
+wallSprite' :: Point -> WallPicture
+wallSprite' (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
 
