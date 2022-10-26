@@ -4,6 +4,7 @@ import Data.Map
 
 import Model.Entities (EntityRecord, Position)
 import Model.Menus (MenuState)
+import Model.Settings
 
 foo :: IO ()
 foo = putStrLn "foo function in Model"
@@ -14,7 +15,7 @@ data GameState = MkGameState {
   score :: Score,
   level :: Int,
   entities :: EntityRecord,
-  inputBuffer :: InputBuffer
+  inputBuffer :: InputBuffer,
   settings :: Settings
   }
 

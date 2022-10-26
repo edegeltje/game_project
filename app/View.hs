@@ -1,7 +1,6 @@
 module View where
 
 import Graphics.Gloss
-
 import Model
 
 window :: Display
