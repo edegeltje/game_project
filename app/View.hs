@@ -4,6 +4,25 @@ import Graphics.Gloss
 
 import Model
 
+window :: Display
+window = InWindow "Pacman" (800, 600) (10, 10) 
+
+pacmanClosed :: Picture
+pacmanClosed = pictures [color yellow (circleSolid 80), translate 25 25 (color black (circleSolid 10))]
+
+openingtime = 0.40
+pacmanOpenMouth :: Float -> PacmanPicture
+pacmanOpenMouth time = color yellow (arcSolid halfAngle (360 - halfAngle) 80) where
+  halfMaxAngle = 45
+  halfAngle = halfMaxAngle * openPercent
+  openPercent = abs(sin (time * pi / openingtime))
+
+animatePacTest :: IO ()
+animatePacTest = animate window black pacmanOpenMouth
+
+test :: IO ()
+test =  display (InWindow "example" (800, 600) (0, 0)) black (color green (circle 100))
+
 baz :: IO()
 baz = putStrLn "baz function in View"
 

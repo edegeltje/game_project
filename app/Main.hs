@@ -10,3 +10,4 @@ main :: IO ()
 main = do foo
           bar
           baz
+          animatePacTest
