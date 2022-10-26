@@ -10,10 +10,10 @@ pacmanClosed :: Picture
 pacmanClosed = pictures [color yellow (circleSolid 80), translate 25 25 (color black (circleSolid 10))]
 
 pacmanOpenMouth :: Float -> Picture
-pacmanOpenMouth time = rotate 180 (pictures [color yellow (circleSolid 80), arcSolid (-abs(sin(180 + 15 * time))) (abs(sin(180 - 15 * time))) 80])
+pacmanOpenMouth time = rotate 180 (pictures [color yellow (circleSolid 80), arcSolid (-abs(sin time)) (abs(sin time)) 80])
 
-animatePacman :: IO ()
-animatePacman = animate window black pacmanOpenMouth
+animatePacTest :: IO ()
+animatePacTest = animate window black pacmanOpenMouth
 
 test :: IO ()
 test =  display (InWindow "example" (800, 600) (0, 0)) black (color green (circle 100))
