@@ -2,6 +2,10 @@ module View where
 
 import Graphics.Gloss
 import Model
+import Model.Entities
+import Model.Menus
+import Model.Settings
+import Data.Map
 
 window :: Display
 window = InWindow "Pacman" (800, 600) (10, 10) 
@@ -17,7 +21,7 @@ pacmanOpenMouth time = color yellow (arcSolid halfAngle (360 - halfAngle) 80) wh
   openPercent = abs(sin (time * pi / openingtime))
 
 animatePacTest :: IO ()
-animatePacTest = animate window black pacmanOpenMouth
+animatePacTest = animate window black (animatePacman testGameState)
 
 test :: IO ()
 test =  display (InWindow "example" (800, 600) (0, 0)) black (color green (circle 100))
@@ -76,27 +80,38 @@ data Sprites = MkSprites {
   animatedSprites :: AnimatedSprites
 }
 
-animateSprites :: GameState -> AnimatedSprites
-animateSprites gamestate = MkASprites 
-  (animatePacman gamestate)
-  (animateBlinky gamestate)
-  (animateInky gamestate)
-  (animatePinky gamestate)
-  (animateClyde gamestate)
+animateSprites :: GameState -> Float -> AnimatedSprites
+animateSprites gamestate time = MkASprites 
+  (animatePacman gamestate time)
+  (animateBlinky gamestate time)
+  (animateInky gamestate time)
+  (animatePinky gamestate time)
+  (animateClyde gamestate time)
 
+animatePacman :: GameState -> Float -> PacmanPicture
+animatePacman gs@(MkGameState _ _ _ _ (MkEntityRecord (MkPlayer _ dir _) _ _) _ _) time = rotate (playerToDir dir) (pictures [color yellow (circleSolid 80), arcSolid (180 + 30 * abs(sin (3 * time))) (180 -  30 * abs(sin (3 * time))) 80])
 
-animatePacman :: GameState -> PacmanPicture
-animatePacman = undefined
+testGameState :: GameState
+testGameState = MkGameState Playing Data.Map.empty 0 1 (MkEntityRecord (MkPlayer (MkPosition 0 0) South Weak) [] []) Neutral (Settings 0)
 
-animateBlinky :: GameState -> BlinkyPicture
+playerToDir :: Direction -> Float
+playerToDir North = 90
+playerToDir East  = 180
+playerToDir South = 270
+playerToDir West  = 0
+
+animateBlinky :: GameState -> Float -> BlinkyPicture
 animateBlinky = undefined
 
-animateInky :: GameState -> InkyPicture
+animateInky :: GameState -> Float -> InkyPicture
 animateInky = undefined
 
-animatePinky :: GameState -> PinkyPicture
+animatePinky :: GameState -> Float -> PinkyPicture
 animatePinky = undefined
 
-animateClyde :: GameState -> ClydePicture
+animateClyde :: GameState -> Float -> ClydePicture
 animateClyde = undefined
+
+wallSprite :: Point -> WallPicture
+wallSprite (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
 
