@@ -67,7 +67,7 @@ blinky1 = pictures [color red
                           arcSolid 270 0 40,
                           translate 80 0 (arcSolid 180 0 40),
                           translate 160 0 (arcSolid 180 270 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -83,7 +83,7 @@ blinky2 = pictures [color red
                       (pictures [
                           translate 40 0 (arcSolid 180 0 40),
                           translate 120 0 (arcSolid 180 0 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -100,7 +100,7 @@ inky1 = pictures [color blue
                           arcSolid 270 0 40,
                           translate 80 0 (arcSolid 180 0 40),
                           translate 160 0 (arcSolid 180 270 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -116,7 +116,7 @@ inky2 = pictures [color blue
                       (pictures [
                           translate 40 0 (arcSolid 180 0 40),
                           translate 120 0 (arcSolid 180 0 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -133,7 +133,7 @@ pinky1 = pictures [color rose
                           arcSolid 270 0 40,
                           translate 80 0 (arcSolid 180 0 40),
                           translate 160 0 (arcSolid 180 270 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -149,7 +149,7 @@ pinky2 = pictures [color rose
                       (pictures [
                           translate 40 0 (arcSolid 180 0 40),
                           translate 120 0 (arcSolid 180 0 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -166,7 +166,7 @@ clyde1 = pictures [color orange
                           arcSolid 270 0 40,
                           translate 80 0 (arcSolid 180 0 40),
                           translate 160 0 (arcSolid 180 270 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
@@ -182,7 +182,7 @@ clyde2 = pictures [color orange
                       (pictures [
                           translate 40 0 (arcSolid 180 0 40),
                           translate 120 0 (arcSolid 180 0 40),
-                          (polygon [(0,0), (160, 0), (160, 80), (0, 80)]), 
+                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
                           translate 80 80 (arcSolid 0 180 80)]), 
                        color white 
                        (pictures [
