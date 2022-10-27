@@ -7,7 +7,7 @@ import Model.Menus
 import Model.Settings
 import Data.Map
 import View.AnimatedSprites
-import View.StaticSprites
+import View.StaticSprites ( WallPicture, ConstantSprites, testIOsprite)
 
 window :: Display
 window = InWindow "Pacman" (800, 600) (10, 10) 
@@ -25,13 +25,6 @@ view :: GameState -> IO Picture
 view = do
   undefined
   
-
--- the following types are Aliases to prevent boolean blindness.
-
-  -- these get updated every frame
-
-  -- these are constant every frame
-
 
 data Sprites = MkSprites {
   constantSprites :: ConstantSprites,
@@ -61,7 +54,7 @@ testGameState = MkGameState
     []
     []) 
   Neutral 
-  (Settings 0)
+  (MkSettings 0 0)
 
 wallSprite' :: Point -> WallPicture
 wallSprite' (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
