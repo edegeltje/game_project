@@ -39,5 +39,7 @@ executable game-project
                     , Model.Settings
                     , Controller
                     , View
+                    , View.AnimatedSprites
+                    , View.StaticSprites
     hs-source-dirs:   app
     default-language: Haskell2010
