@@ -31,3 +31,6 @@ data ConstantSprites = MkCSprites{
     keySprite :: KeyPicture,
     wallSprite :: WallPicture
 }
+
+wallSprite' :: WallPicture
+wallSprite' = color blue (polygon [(0, 0), (40, 0), (40, 40), (0, 40)])

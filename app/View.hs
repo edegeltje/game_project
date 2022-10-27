@@ -38,15 +38,6 @@ data Sprites = MkSprites {
   animatedSprites :: AnimatedSprites
 }
 
-dirToAngle :: Direction -> Float
-dirToAngle North = 90
-dirToAngle East  = 0
-dirToAngle South = 270
-dirToAngle West  = 180
-
-animateInky :: GameState -> InkyPicture
-animateInky = undefined
-
 testGameState :: GameState
 testGameState = MkGameState 
   Playing 
@@ -62,7 +53,4 @@ testGameState = MkGameState
     []) 
   Neutral 
   (Settings 0)
-
-wallSprite' :: Point -> WallPicture
-wallSprite' (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
 
