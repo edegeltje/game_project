@@ -5,10 +5,10 @@ import Model
 import Controller
 
 import View
-import View.StaticSprites (testIOsprite)
+import View.StaticSprites (testSpriteIO)
 
 main :: IO ()
 main = do foo
           bar
           baz
-          testIOsprite
+          testSpriteIO

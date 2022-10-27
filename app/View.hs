@@ -7,7 +7,7 @@ import Model.Menus
 import Model.Settings
 import Data.Map
 import View.AnimatedSprites
-import View.StaticSprites ( WallPicture, ConstantSprites, testIOsprite)
+import View.StaticSprites ( WallPicture, ConstantSprites, testSpriteIO)
 
 window :: Display
 window = InWindow "Pacman" (800, 600) (10, 10) 
