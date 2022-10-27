@@ -46,6 +46,14 @@ data EnemyEntity = MkEnemy {
   enemyStatus :: EnemyStatus
 }
 
+instance Positioned EnemyEntity where
+  getPosition enemy = enemyPosition enemy
+
+instance Agent EnemyEntity where
+  setPosition enemy newPosition = enemy {enemyPosition = newPosition}
+  getDirection enemy = enemyMovementDirection enemy
+  setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
+
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
 data Fruit = MkFruit {
   fruitType :: FruitType,

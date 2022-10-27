@@ -2,38 +2,32 @@ module View.AnimatedSprites where
 
 import Graphics.Gloss
 
+import Data.Fixed
+
 import Model
 
 import Model.Entities
+import View.StaticSprites (window)
 
 type PacmanPicture = Picture
-type BlinkyPicture = Picture
-type InkyPicture = Picture
-type PinkyPicture = Picture
-type ClydePicture = Picture
-
+type GhostPicture = Picture
 
 data AnimatedSprites = MkASprites {
   pacmanSprite :: PacmanPicture,
-  blinkySprite :: BlinkyPicture,
-  inkySprite :: InkyPicture,
-  pinkySprite :: PinkyPicture,
-  clydeSprite :: ClydePicture
+  ghostSprites :: [GhostPicture]
 }
 
 
 animateSprites :: GameState -> Float -> AnimatedSprites
-animateSprites gamestate time = MkASprites 
-  (animatePacman gamestate time)
-  (animateBlinky gamestate time)
-  (animateInky gamestate time)
-  (animatePinky gamestate time)
-  (animateClyde gamestate time)
+animateSprites gameState time = MkASprites (animatePacman player' time)
+  (map (($ time) . animateGhost) ghosts) where
+    player' = player $ entities gameState
+    ghosts = enemies $ entities gameState
 
-animatePacman :: GameState -> Float -> PacmanPicture
+animatePacman :: PlayerEntity -> Float -> PacmanPicture
 
-animatePacman gamestate = rotate (dirToAngle dir) . pacmanOpenMouth where
-  dir = getDirection $ player $ entities gamestate
+animatePacman player = rotate (dirToAngle dir) . pacmanOpenMouth where
+  dir = getDirection player
 
 openingtime = 0.40
 
@@ -43,17 +37,23 @@ pacmanOpenMouth time = color yellow (arcSolid halfAngle (-halfAngle) 80) where
   halfAngle = halfMaxAngle * openPercent
   openPercent = abs(sin (time * pi / openingtime))
 
-animateBlinky :: GameState -> Float -> BlinkyPicture
-animateBlinky = undefined
+-- shit het wil niet zoals ik wil.
+-- voor een goede animate hebben we het volgende nodig:
 
-animateInky :: GameState -> Float -> InkyPicture
-animateInky = undefined
-
-animatePinky :: GameState -> Float -> PinkyPicture
-animatePinky = undefined
-
-animateClyde :: GameState -> Float -> ClydePicture
-animateClyde = undefined
+animateGhost :: EnemyEntity -> Float -> GhostPicture
+animateGhost ghost time = pictures [
+  color ghostColor ghostTop,
+  color ghostColor ghostBottom,
+  translate 40 80 eye,
+  translate 120 80 eye] where
+    ghostColor = case enemyMovementType ghost of
+      Blinky -> red
+      Inky   -> blue
+      Pinky  -> rose
+      Clyde  -> orange
+    dir = getDirection ghost
+    ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
+    eye = dirToEye dir
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270
@@ -61,134 +61,43 @@ dirToAngle East  = 180
 dirToAngle South = 90
 dirToAngle West  = 0
 
-blinky1 :: BlinkyPicture
-blinky1 = pictures [color red 
-                      (pictures [
-                          arcSolid 270 0 40,
-                          translate 80 0 (arcSolid 180 0 40),
-                          translate 160 0 (arcSolid 180 270 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+ghostTop = pictures [polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
+  translate 80 80 (arcSolid 0 180 80)]
 
-blinky2 :: BlinkyPicture
-blinky2 = pictures [color red 
-                      (pictures [
-                          translate 40 0 (arcSolid 180 0 40),
-                          translate 120 0 (arcSolid 180 0 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+ghostBottom1 = pictures [arcSolid 270 360 40,
+  translate 80 0 (arcSolid 180 0 40),
+  translate 160 0 (arcSolid 180 270 40)]
 
-inky1 :: InkyPicture
-inky1 = pictures [color blue 
-                      (pictures [
-                          arcSolid 270 0 40,
-                          translate 80 0 (arcSolid 180 0 40),
-                          translate 160 0 (arcSolid 180 270 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+ghostBottom2 = pictures [translate 40 0 (arcSolid 180 0 40),
+  translate 120 0 (arcSolid 180 0 40)]
 
-inky2 :: InkyPicture
-inky2 = pictures [color blue 
-                      (pictures [
-                          translate 40 0 (arcSolid 180 0 40),
-                          translate 120 0 (arcSolid 180 0 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+dirToCoords :: Direction -> (Float, Float) -- not quite a position 
+-- (points are different from vectors)
+dirToCoords North = (0,1)
+dirToCoords East  = (1,0)
+dirToCoords South = (0,-1)
+dirToCoords West  = (-1,0)
 
-pinky1 :: PinkyPicture
-pinky1 = pictures [color rose
-                      (pictures [
-                          arcSolid 270 0 40,
-                          translate 80 0 (arcSolid 180 0 40),
-                          translate 160 0 (arcSolid 180 270 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+irisOffset :: Float
+irisOffset = 10 :: Float
+eyeWhiteOffset :: Float
+eyeWhiteOffset = 5 :: Float
 
-pinky2 :: PinkyPicture
-pinky2 = pictures [color rose
-                      (pictures [
-                          translate 40 0 (arcSolid 180 0 40),
-                          translate 120 0 (arcSolid 180 0 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+dirToEye :: Direction -> Picture
+dirToEye dir = pictures [color white $
+  translate xEyeWhiteOffset yEyeWhiteOffset $ circleSolid 20,
+  color blue $ translate xIrisOffset yIrisOffset $ circleSolid 8 ] where
+    (xmult, ymult) = dirToCoords dir
+    xIrisOffset = xmult * irisOffset
+    yIrisOffset = ymult * irisOffset + northCorrection
+    xEyeWhiteOffset = xmult * eyeWhiteOffset
+    yEyeWhiteOffset = ymult * eyeWhiteOffset + northCorrection
+    northCorrection = if dir == North then 30 else 0
 
-clyde1 :: ClydePicture
-clyde1 = pictures [color orange 
-                      (pictures [
-                          arcSolid 270 0 40,
-                          translate 80 0 (arcSolid 180 0 40),
-                          translate 160 0 (arcSolid 180 270 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+testGhost = MkEnemy 
+  (MkPosition 0 0)
+  South
+  Clyde
+  Alive
 
-clyde2 :: ClydePicture
-clyde2 = pictures [color orange 
-                      (pictures [
-                          translate 40 0 (arcSolid 180 0 40),
-                          translate 120 0 (arcSolid 180 0 40),
-                          polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-                          translate 80 80 (arcSolid 0 180 80)]), 
-                       color white 
-                       (pictures [
-                          translate 40 80 (circleSolid 20), 
-                          translate 120 80 (circleSolid 20)]), 
-                       color blue 
-                       (pictures [
-                          translate 50 82.5 (circleSolid 5), 
-                          translate 130 82.5 (circleSolid 5)])]
+renderTestGhost = animate window black $ animateGhost testGhost
