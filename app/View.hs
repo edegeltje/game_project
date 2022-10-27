@@ -13,7 +13,7 @@ window :: Display
 window = InWindow "Pacman" (800, 600) (10, 10) 
 
 animatePacTest :: IO ()
-animatePacTest = animate window black pacmanOpenMouth
+animatePacTest = animate window black (animatePacman testGameState)
 
 test :: IO ()
 test =  display (InWindow "example" (800, 600) (0, 0)) black (color green (circle 100))
@@ -31,15 +31,6 @@ data Sprites = MkSprites {
   animatedSprites :: AnimatedSprites
 }
 
-dirToAngle :: Direction -> Float
-dirToAngle North = 90
-dirToAngle East  = 0
-dirToAngle South = 270
-dirToAngle West  = 180
-
-rotateSpriteToDir :: Direction -> Picture -> Picture
-rotateSpriteToDir = rotate . dirToAngle
-
 testGameState :: GameState
 testGameState = MkGameState 
   Playing 
@@ -55,7 +46,4 @@ testGameState = MkGameState
     []) 
   Neutral 
   (MkSettings 0 0)
-
-wallSprite' :: Point -> WallPicture
-wallSprite' (x, y) = color blue (polygon [(x, y), (x + 5, y), (x, y + 5), (x + 5, y + 5)])
 

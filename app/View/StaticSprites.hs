@@ -47,3 +47,6 @@ testSprite = animate window black (const smallDot)
 testSpriteIO = do 
   sprite <- cherry
   animate window black (const sprite)
+
+wallSprite' :: WallPicture
+wallSprite' = color blue (polygon [(0, 0), (40, 0), (40, 40), (0, 40)])
