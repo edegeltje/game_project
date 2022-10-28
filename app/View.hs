@@ -22,7 +22,7 @@ baz = putStrLn "baz function in View"
 view :: GameState -> IO Picture
 view = do
   undefined
-  
+
 
 data Sprites = MkSprites {
   constantSprites :: ConstantSprites,

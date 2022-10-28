@@ -79,9 +79,9 @@ dirToCoords South = (0,-1)
 dirToCoords West  = (-1,0)
 
 irisOffset :: Float
-irisOffset = 10 :: Float
+irisOffset = 15
 eyeWhiteOffset :: Float
-eyeWhiteOffset = 5 :: Float
+eyeWhiteOffset = 10
 
 dirToEye :: Direction -> Picture
 dirToEye dir = pictures [color white $
@@ -94,7 +94,7 @@ dirToEye dir = pictures [color white $
     yEyeWhiteOffset = ymult * eyeWhiteOffset + northCorrection
     northCorrection = if dir == North then 30 else 0
 
-testGhost = MkEnemy 
+testGhost = MkEnemy
   (MkPosition 0 0)
   South
   Clyde

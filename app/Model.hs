@@ -25,7 +25,8 @@ type BottomLayer = Map Position BottomLayerContent
 
 data InputBuffer = Neutral | Up | Down | Left | Right
 
-data BottomLayerContent = Wall | SmallDot | Bigdot | Empty
+data BottomLayerContent = Wall | SmallDot | PowerDot | Empty
+  deriving Eq
 {-
 This datastructure to prevent non-accesible states from being represented
 -}

@@ -1,7 +1,8 @@
 module View.StaticSprites where
 
+import qualified Data.Maybe as DMB
+import qualified Data.Map as DM
 import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Animate
 import Model
 
 import Model.Entities
@@ -49,53 +50,29 @@ straightWall = color blue (polygon [(40, 0), (80,0), (80,80),(40,80)])
 outerCornerWall :: WallPicture
 outerCornerWall = color blue (polygon [(40,0), (80,0), (80,80), (0,80), (0,40),(40,40)])
 
-appleBitmapPath :: FilePath
-appleBitmapPath = "bitmaps/apple.bmp"
-
-bellBitmapPath :: FilePath
-bellBitmapPath = "bitmaps/bell.bmp"
-
-cherryBitmapPath :: FilePath
-cherryBitmapPath = "bitmaps/cherry.bmp"
-
-galaxianBitmapPath :: FilePath
-galaxianBitmapPath = "bitmaps/galaxian.bmp"
-
-keyBitmapPath :: FilePath
-keyBitmapPath = "bitmaps/key.bmp"
-
-melonBitmapPath :: FilePath
-melonBitmapPath = "bitmaps/melon.bmp"
-
-orangeBitmapPath :: FilePath
-orangeBitmapPath = "bitmaps/orange.bmp"
-
-strawberryBitmapPath :: FilePath
-strawberryBitmapPath = "bitmaps/strawberry.bmp"
-
 appleIO :: IO ApplePicture
-appleIO = loadBMP appleBitmapPath
+appleIO = loadBMP "bitmaps/apple.bmp"
 
 bellIO :: IO BellPicture
-bellIO = loadBMP bellBitmapPath
+bellIO = loadBMP "bitmaps/bell.bmp"
 
 cherryIO :: IO CherryPicture
-cherryIO = loadBMP cherryBitmapPath 
+cherryIO = loadBMP "bitmaps/cherry.bmp" 
 
 galaxianIO :: IO GalaxianPicture
-galaxianIO = loadBMP galaxianBitmapPath
+galaxianIO = loadBMP "bitmaps/galaxian.bmp"
 
 keyIO :: IO KeyPicture
-keyIO = loadBMP keyBitmapPath
+keyIO = loadBMP "bitmaps/key.bmp"
 
 melonIO :: IO MelonPicture
-melonIO = loadBMP melonBitmapPath
+melonIO = loadBMP "bitmaps/melon.bmp"
 
 orangeIO :: IO OrangePicture
-orangeIO = loadBMP orangeBitmapPath
+orangeIO = loadBMP "bitmaps/orange.bmp"
 
 strawberryIO :: IO StrawberryPicture
-strawberryIO = loadBMP strawberryBitmapPath
+strawberryIO = loadBMP "bitmaps/strawberry.bmp"
 
 constantSpritesIO :: IO ConstantSprites
 constantSpritesIO = do
@@ -123,8 +100,12 @@ constantSpritesIO = do
       straightWall
       outerCornerWall
 
+dirToAngle :: Direction -> Float
+dirToAngle North = 270
+dirToAngle East  = 180
+dirToAngle South = 90
+dirToAngle West  = 0
 
-    
 
 window = InWindow "Pacman" (800, 600) (10, 10)
 
@@ -148,3 +129,71 @@ testSprites = do
         translate 320 0  $ keySprite        cSprites
         ]
   animate window black $ const composedSprites
+
+
+
+drawBottomLayer :: BottomLayer -> Picture
+drawBottomLayer maze = DM.foldrWithKey' addToPicture blank maze
+  where
+    addToPicture position _ canvas = pictures [canvas, placedSpriteFromContext position maze]
+-- (Position -> BottomLayerContent -> Picture -> Picture)
+
+
+placedSpriteFromContext :: Position -> BottomLayer -> Picture
+placedSpriteFromContext position maze = translate (80 * x) (80 * y) $ 
+  spriteFromContext position maze
+  where
+    x = fromIntegral $ xposition position
+    y = fromIntegral $ yposition position
+
+spriteFromContext :: Position -> BottomLayer -> Picture
+spriteFromContext position maze = case getPositionContent position maze of
+  Empty    -> blank
+  SmallDot -> smallDot
+  PowerDot -> powerDot
+  Wall     -> drawWallSprite position maze
+
+getPositionContent :: Position -> BottomLayer -> BottomLayerContent
+getPositionContent position maze = DMB.fromMaybe Empty $ DM.lookup position maze
+
+
+drawWallSprite :: Position -> BottomLayer -> WallPicture
+drawWallSprite position maze = rotate (dirToAngle $ orientWall enwsContent) wallSprite 
+  where
+    x = xposition position
+    y = yposition position
+    nePosition = MkPosition (x+1) (y+1)
+    nwPosition = MkPosition (x-1) (y+1)
+    swPosition = MkPosition (x-1) (y-1)
+    sePosition = MkPosition (x+1) (y-1)
+    enwsContent = map (`getPositionContent` maze) [
+      nePosition,
+      nwPosition,
+      swPosition,
+      sePosition
+      ] -- this ordering to traverse in counterclockwise direction
+    neighbouringWalls = length (filter (== Wall) enwsContent)
+    wallSprite = case neighbouringWalls of
+      1 -> innerCornerWall
+      2 -> straightWall
+      3 -> outerCornerWall
+      _ -> blank
+
+orientWall :: [BottomLayerContent] -> Direction
+orientWall enwsContent = case enwsContent of
+  [Wall,_,_,_] -> orientWallCW enwsContent
+  [_,Wall,_,_] -> North
+  [_,_,Wall,_] -> West
+  _ -> South
+
+orientWallCW :: [BottomLayerContent] -> Direction
+orientWallCW enwsContent = case reverse enwsContent of
+  -- by calling this function, we know that northeast is wall
+  [Wall, Wall, _ , _] -> West
+  -- since we don't care about the orientation of fully enclosed wall,
+  -- returning West in that case as well is fine
+  [Wall, _, _, _] -> South
+  _ -> East
+
+-- note: these orientWall functions can be written a bit easier if there is a way to explicitly
+-- match "not Wall"
