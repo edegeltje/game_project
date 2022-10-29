@@ -33,11 +33,15 @@ executable game-project
                     , containers
                     , gloss
                     , random
+                    , aeson
     other-modules:    Model
                     , Model.Entities
                     , Model.Menus
                     , Model.Settings
                     , Controller
+                    , Controller.GameController
+                    , Controller.JsonInteract
+                    , Controller.MenuController
                     , View
                     , View.AnimatedSprites
                     , View.StaticSprites

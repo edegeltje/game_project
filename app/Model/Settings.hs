@@ -1,7 +1,7 @@
 module Model.Settings where
 data Settings = MkSettings{
   volume :: Int,
-  someothershit :: Int
+  gameSpeed :: Float
 }
   -- something something sound volume?
   -- something something keybindings?

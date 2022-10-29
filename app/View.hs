@@ -44,6 +44,6 @@ testGameState = MkGameState
     testPlayer
     []
     []) 
-  Neutral 
+  InputNeutral 
   (MkSettings 0 0)
 

@@ -181,19 +181,9 @@ drawWallSprite position maze = rotate (dirToAngle $ orientWall enwsContent) wall
 
 orientWall :: [BottomLayerContent] -> Direction
 orientWall enwsContent = case enwsContent of
-  [Wall,_,_,_] -> orientWallCW enwsContent
+  [Wall,_,Wall,Wall] -> West
+  [Wall,_,_,Wall] -> South
+  [Wall,_,_,_] -> East
   [_,Wall,_,_] -> North
   [_,_,Wall,_] -> West
   _ -> South
-
-orientWallCW :: [BottomLayerContent] -> Direction
-orientWallCW enwsContent = case reverse enwsContent of
-  -- by calling this function, we know that northeast is wall
-  [Wall, Wall, _ , _] -> West
-  -- since we don't care about the orientation of fully enclosed wall,
-  -- returning West in that case as well is fine
-  [Wall, _, _, _] -> South
-  _ -> East
-
--- note: these orientWall functions can be written a bit easier if there is a way to explicitly
--- match "not Wall"
