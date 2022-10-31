@@ -28,11 +28,11 @@ data PlayerEntity = MkPlayer {
   powerState :: PowerState
 }
 instance Positioned PlayerEntity where
-  getPosition player = playerPosition player
+  getPosition = playerPosition
 
 instance Agent PlayerEntity where
   setPosition player newPosition = player {playerPosition = newPosition}
-  getDirection player = playerMovementDirection player
+  getDirection = playerMovementDirection
   setDirection player newDirection = player {playerMovementDirection = newDirection}
 
 data EnemyMovementType = Blinky | Inky | Pinky | Clyde
@@ -47,11 +47,11 @@ data EnemyEntity = MkEnemy {
 }
 
 instance Positioned EnemyEntity where
-  getPosition enemy = enemyPosition enemy
+  getPosition = enemyPosition
 
 instance Agent EnemyEntity where
   setPosition enemy newPosition = enemy {enemyPosition = newPosition}
-  getDirection enemy = enemyMovementDirection enemy
+  getDirection = enemyMovementDirection
   setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
 
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
@@ -61,4 +61,4 @@ data Fruit = MkFruit {
 }
 
 instance Positioned Fruit where
-  getPosition fruit = fruitPosition fruit
+  getPosition = fruitPosition
