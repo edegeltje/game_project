@@ -7,3 +7,4 @@ data Settings = MkSettings{
   -- something something keybindings?
   -- something something fullscreen?
 
+tILESIZE = 8 :: Float

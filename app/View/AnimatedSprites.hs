@@ -1,13 +1,14 @@
 module View.AnimatedSprites where
 
 import Graphics.Gloss
-
+import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import Data.Fixed
 
 import Model
 
 import Model.Entities
 import View.StaticSprites (window)
+import Model.Settings
 
 type PacmanPicture = Picture
 type GhostPicture = Picture
@@ -32,7 +33,7 @@ animatePacman player = rotate (dirToAngle dir) . pacmanOpenMouth where
 openingtime = 0.40
 
 pacmanOpenMouth :: Float -> PacmanPicture
-pacmanOpenMouth time = color yellow (arcSolid halfAngle (-halfAngle) 80) where
+pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
   halfMaxAngle = 45
   halfAngle = halfMaxAngle * openPercent
   openPercent = abs(sin (time * pi / openingtime))
@@ -44,8 +45,8 @@ animateGhost :: EnemyEntity -> Float -> GhostPicture
 animateGhost ghost time = pictures [
   color ghostColor ghostTop,
   color ghostColor ghostBottom,
-  translate 40 80 eye,
-  translate 120 80 eye] where
+  translate' (0.5, 1)  eye,
+  translate' (1.5, 1) eye] where
     ghostColor = case enemyMovementType ghost of
       Blinky -> red
       Inky   -> blue
@@ -61,15 +62,20 @@ dirToAngle East  = 180
 dirToAngle South = 90
 dirToAngle West  = 0
 
-ghostTop = pictures [polygon [(0,0), (160, 0), (160, 80), (0, 80)], 
-  translate 80 80 (arcSolid 0 180 80)]
+ghostTop = pictures [
+  polygon' [(0,0),
+    (2, 0),
+    (2, 1),
+    (0, 1)],
+  translate' (1,1) (arcSolid' 0 180 1)]
 
-ghostBottom1 = pictures [arcSolid 270 360 40,
-  translate 80 0 (arcSolid 180 0 40),
-  translate 160 0 (arcSolid 180 270 40)]
+ghostBottom1 = pictures [arcSolid' 270 360 0.5,
+  translate' (1,0) (arcSolid' 180 0 0.5),
+  translate' (2,0) (arcSolid' 180 270 0.5)]
 
-ghostBottom2 = pictures [translate 40 0 (arcSolid 180 0 40),
-  translate 120 0 (arcSolid 180 0 40)]
+ghostBottom2 = pictures [
+  translate' (0.5,0) (arcSolid' 180 0 0.5),
+  translate' (1.5, 0) (arcSolid' 180 0 0.5)]
 
 dirToCoords :: Direction -> (Float, Float) -- not quite a position 
 -- (points are different from vectors)
@@ -79,20 +85,18 @@ dirToCoords South = (0,-1)
 dirToCoords West  = (-1,0)
 
 irisOffset :: Float
-irisOffset = 15
+irisOffset = 0.2
 eyeWhiteOffset :: Float
-eyeWhiteOffset = 10
+eyeWhiteOffset = 0.1
 
 dirToEye :: Direction -> Picture
-dirToEye dir = pictures [color white $
-  translate xEyeWhiteOffset yEyeWhiteOffset $ circleSolid 20,
-  color blue $ translate xIrisOffset yIrisOffset $ circleSolid 8 ] where
-    (xmult, ymult) = dirToCoords dir
-    xIrisOffset = xmult * irisOffset
-    yIrisOffset = ymult * irisOffset + northCorrection
-    xEyeWhiteOffset = xmult * eyeWhiteOffset
-    yEyeWhiteOffset = ymult * eyeWhiteOffset + northCorrection
-    northCorrection = if dir == North then 30 else 0
+dirToEye dir = translate' northCorrection $ pictures [
+  color white $ 
+    translate' (eyeWhiteOffset A.* dirCoords) $ circleSolid' 0.25,
+  color blue $ 
+    translate' (irisOffset A.* dirCoords ) $ circleSolid' 0.1 ] where
+      dirCoords = dirToCoords dir
+      northCorrection = if dir == North then (0,0.4) else (0,0)
 
 testGhost = MkEnemy
   (MkPosition 0 0)
