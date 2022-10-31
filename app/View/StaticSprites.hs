@@ -2,6 +2,7 @@ module View.StaticSprites where
 
 import qualified Data.Maybe as DMB
 import qualified Data.Map as DM
+import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import Graphics.Gloss
 import Model
 
@@ -42,13 +43,13 @@ powerDot :: PowerDotPicture
 powerDot = color white $ circleSolid 20
 
 innerCornerWall :: WallPicture
-innerCornerWall = color blue (polygon [(40, 0), (80, 0), (80, 40), (40, 40)])
+innerCornerWall = color blue (polygon' [(0.5, 0), (1, 0), (1, 0.5), (0.5, 0.5)])
 
 straightWall :: WallPicture
-straightWall = color blue (polygon [(40, 0), (80,0), (80,80),(40,80)])
+straightWall = color blue (polygon' [(0.5, 0), (1,0), (1,1),(0.5,1)])
 
 outerCornerWall :: WallPicture
-outerCornerWall = color blue (polygon [(40,0), (80,0), (80,80), (0,80), (0,40),(40,40)])
+outerCornerWall = color blue (polygon' [(0.5,0), (1,0), (1,1), (0,1), (0,0.5),(0.5,0.5)])
 
 appleIO :: IO ApplePicture
 appleIO = loadBMP "bitmaps/apple.bmp"
@@ -117,16 +118,16 @@ testSpriteIO = do
 testSprites = do
   cSprites <- constantSpritesIO
   let composedSprites = pictures [
-        translate 0 80   $smallDotSprite    cSprites,
-        translate 80 80  $ cherrySprite     cSprites,
-        translate 160 80 $ strawberrySprite cSprites,
-        translate 240 80 $ orangeSprite     cSprites,
-        translate 320 80 $ appleSprite      cSprites,
-        translate 0 0    $ powerDotSprite   cSprites,
-        translate 80 0   $ melonSprite      cSprites,
-        translate 160 0  $ galaxianSprite   cSprites,
-        translate 240 0  $ bellSprite       cSprites,
-        translate 320 0  $ keySprite        cSprites
+        translate' (0,1) $smallDotSprite    cSprites,
+        translate' (1,1) $ cherrySprite     cSprites,
+        translate' (2,1) $ strawberrySprite cSprites,
+        translate' (3,1) $ orangeSprite     cSprites,
+        translate' (4,1) $ appleSprite      cSprites,
+        translate' (0,0) $ powerDotSprite   cSprites,
+        translate' (1,0) $ melonSprite      cSprites,
+        translate' (2,0) $ galaxianSprite   cSprites,
+        translate' (3,0) $ bellSprite       cSprites,
+        translate' (4,0) $ keySprite        cSprites
         ]
   animate window black $ const composedSprites
 
@@ -140,11 +141,8 @@ drawBottomLayer maze = DM.foldrWithKey' addToPicture blank maze
 
 
 placedSpriteFromContext :: Position -> BottomLayer -> Picture
-placedSpriteFromContext position maze = translate (80 * x) (80 * y) $ 
+placedSpriteFromContext position maze = translate' (toFloatTuple position) $ 
   spriteFromContext position maze
-  where
-    x = fromIntegral $ xposition position
-    y = fromIntegral $ yposition position
 
 spriteFromContext :: Position -> BottomLayer -> Picture
 spriteFromContext position maze = case getPositionContent position maze of

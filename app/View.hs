@@ -9,6 +9,8 @@ import Data.Map
 import View.AnimatedSprites
 import View.StaticSprites ( WallPicture, ConstantSprites, testSpriteIO, window)
 
+import qualified View.ViewGame as VG
+import qualified View.ViewMenu as VM
 
 animatePacTest :: IO ()
 animatePacTest = animate window black (animatePacman testPlayer)
@@ -20,14 +22,9 @@ baz :: IO()
 baz = putStrLn "baz function in View"
 
 view :: GameState -> IO Picture
-view = do
-  undefined
+view gs@MkGameState {menuState = Playing} = VG.view gs
+view gs = VM.view gs
 
-
-data Sprites = MkSprites {
-  constantSprites :: ConstantSprites,
-  animatedSprites :: AnimatedSprites
-}
 
 testPlayer = MkPlayer 
       (MkPosition 0 0) 

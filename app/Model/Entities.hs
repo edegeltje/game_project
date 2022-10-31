@@ -2,6 +2,8 @@ module Model.Entities where
 
 data Position = MkPosition {xposition:: Int, yposition::Int}
   deriving (Eq, Ord)
+toFloatTuple :: Position -> (Float,Float)
+toFloatTuple p = (fromIntegral $ xposition p, fromIntegral $ yposition p)
 
 data Direction = North | South | East | West 
   deriving (Eq)
