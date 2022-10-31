@@ -1,8 +1,10 @@
 module Model.Menus where
 
-data MenuState = PauseMenu PauseMenuState | StartMenu StartMenuState | SettingMenu | Playing
+data MenuState = PauseMenu PauseMenuState | StartMenu StartMenuState | SettingMenu SettingMenuState | Playing
 
-data PauseMenuState = ContinueOption | Settingoption | ExitToStartOption | ExitToDesktopOption
+data PauseMenuState = ContinueOption | PauseSettingOption | ExitToStartOption | ExitToDesktopOption
 
-data StartMenuState = PlayOption | SettingOption | ExitOption
+data StartMenuState = PlayOption | StartSettingOption | ExitOption
+
+data SettingMenuState = VolumeOption | SpeedOption
 
