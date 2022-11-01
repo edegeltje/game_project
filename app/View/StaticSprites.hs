@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use <$>" #-}
 module View.StaticSprites where
 
 import qualified Data.Maybe as DMB
@@ -20,7 +22,7 @@ type BellPicture = Picture
 type KeyPicture = Picture
 type WallPicture = Picture
 
-data ConstantSprites = MkCSprites{
+data FruitSprites = MkFSprites{
     smallDotSprite :: SmallDotPicture,
     powerDotSprite :: PowerDotPicture,
     appleSprite :: ApplePicture,
@@ -30,11 +32,8 @@ data ConstantSprites = MkCSprites{
     keySprite :: KeyPicture,
     melonSprite :: MelonPicture,
     orangeSprite :: OrangePicture,
-    strawberrySprite :: StrawberryPicture,
-    innerCornerWallSprite :: WallPicture,
-    straightWallSprite :: WallPicture,
-    outerCornerWallSprite :: WallPicture
-}
+    strawberrySprite :: StrawberryPicture
+    }
 
 
 smallDot :: SmallDotPicture
@@ -75,31 +74,19 @@ orangeIO = loadBMP "bitmaps/orange.bmp"
 strawberryIO :: IO StrawberryPicture
 strawberryIO = loadBMP "bitmaps/strawberry.bmp"
 
-constantSpritesIO :: IO ConstantSprites
-constantSpritesIO = do
-  apple <- appleIO
-  bell <- bellIO
-  cherry <- cherryIO
-  galaxian <- galaxianIO
-  key <- keyIO
-  melon <- melonIO
-  orange <- orangeIO
-  strawberry <- strawberryIO
-  pure $ 
-    MkCSprites 
-      smallDot 
-      powerDot
-      apple
-      bell
-      cherry
-      galaxian
-      key
-      melon
-      orange
-      strawberry
-      innerCornerWall
-      straightWall
-      outerCornerWall
+instance Renderable Fruit where
+  getSpriteIO MkFruit {fruitType = ft} _ = uncurry scale (tileToPoint (1/8,1/8)) <$>
+    case ft of
+      Cherry -> cherryIO
+      Strawberry -> strawberryIO
+      Orange -> orangeIO
+      Apple -> appleIO
+      Melon -> melonIO
+      Galaxian -> galaxianIO
+      Bell -> bellIO
+      Key -> keyIO
+
+
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270
@@ -114,22 +101,6 @@ testSprite = animate window black (const smallDot)
 testSpriteIO = do 
   sprite <- cherryIO
   animate window black $ const sprite
-
-testSprites = do
-  cSprites <- constantSpritesIO
-  let composedSprites = pictures [
-        translate' (0,1) $smallDotSprite    cSprites,
-        translate' (1,1) $ cherrySprite     cSprites,
-        translate' (2,1) $ strawberrySprite cSprites,
-        translate' (3,1) $ orangeSprite     cSprites,
-        translate' (4,1) $ appleSprite      cSprites,
-        translate' (0,0) $ powerDotSprite   cSprites,
-        translate' (1,0) $ melonSprite      cSprites,
-        translate' (2,0) $ galaxianSprite   cSprites,
-        translate' (3,0) $ bellSprite       cSprites,
-        translate' (4,0) $ keySprite        cSprites
-        ]
-  animate window black $ const composedSprites
 
 
 
