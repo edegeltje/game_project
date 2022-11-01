@@ -1,4 +1,5 @@
 module Model.Entities where
+import Graphics.Gloss
 
 data Position = MkPosition {xposition:: Int, yposition::Int}
   deriving (Eq, Ord)
@@ -10,6 +11,9 @@ data Direction = North | South | East | West
 
 class Positioned a where
   getPosition :: a -> Position
+
+class Positioned a => Renderable a where
+  getSpriteIO :: a -> Float -> IO Picture
 
 data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,

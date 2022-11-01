@@ -5,7 +5,7 @@ import Model
 import Controller
 
 import View
-import View.StaticSprites (testSpriteIO, testSprite, testSprites)
+import View.StaticSprites (testSpriteIO, testSprite)
 import View.AnimatedSprites (renderTestGhost)
 
 main :: IO ()

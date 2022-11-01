@@ -25,6 +25,9 @@ animateSprites gameState time = MkASprites (animatePacman player' time)
     player' = player $ entities gameState
     ghosts = enemies $ entities gameState
 
+instance Renderable PlayerEntity where
+  getSpriteIO = (return .) . animatePacman
+
 animatePacman :: PlayerEntity -> Float -> PacmanPicture
 
 animatePacman player = rotate (dirToAngle dir) . pacmanOpenMouth where
@@ -55,6 +58,9 @@ animateGhost ghost time = pictures [
     dir = getDirection ghost
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = dirToEye dir
+
+instance Renderable EnemyEntity where
+  getSpriteIO = (return .) . animateGhost
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270

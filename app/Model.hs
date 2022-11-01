@@ -19,6 +19,7 @@ data GameState = MkGameState {
   level :: Int,
   entities :: EntityRecord,
   inputBuffer :: InputButton,
+  time :: Float,
   settings :: Settings
   }
 
@@ -57,3 +58,7 @@ circleSolid' :: Float -> Picture
 circleSolid' c= circleSolid $ tILESIZE * c
 arcSolid' :: Float -> Float -> Float -> Picture
 arcSolid' a b c = arcSolid a b $ tILESIZE * c
+
+
+picturesIO :: [IO Picture] -> IO Picture
+picturesIO =  (pictures <$>) . sequence

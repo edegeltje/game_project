@@ -7,7 +7,7 @@ import Model.Menus
 import Model.Settings
 import Data.Map
 import View.AnimatedSprites
-import View.StaticSprites ( WallPicture, ConstantSprites, testSpriteIO, window)
+import View.StaticSprites ( WallPicture, testSpriteIO, window)
 
 import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
@@ -42,5 +42,6 @@ testGameState = MkGameState
     []
     []) 
   InputNeutral 
+  0
   (MkSettings 0 0)
 
