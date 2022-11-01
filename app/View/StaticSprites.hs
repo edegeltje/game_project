@@ -75,15 +75,16 @@ strawberryIO :: IO StrawberryPicture
 strawberryIO = loadBMP "bitmaps/strawberry.bmp"
 
 instance Renderable Fruit where
-  getSpriteIO MkFruit {fruitType = ft} _ = case ft of
-    Cherry -> cherryIO
-    Strawberry -> strawberryIO
-    Orange -> orangeIO
-    Apple -> appleIO
-    Melon -> melonIO
-    Galaxian -> galaxianIO
-    Bell -> bellIO
-    Key -> keyIO
+  getSpriteIO MkFruit {fruitType = ft} _ = uncurry scale (tileToPoint (1/8,1/8)) <$>
+    case ft of
+      Cherry -> cherryIO
+      Strawberry -> strawberryIO
+      Orange -> orangeIO
+      Apple -> appleIO
+      Melon -> melonIO
+      Galaxian -> galaxianIO
+      Bell -> bellIO
+      Key -> keyIO
 
 
 

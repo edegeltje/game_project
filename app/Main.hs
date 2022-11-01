@@ -12,4 +12,4 @@ main :: IO ()
 main = do foo
           bar
           baz
-          renderTestGhost
+          testView
