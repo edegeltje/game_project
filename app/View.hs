@@ -9,6 +9,7 @@ import Model.Settings
 import qualified Data.Map as DM
 import View.AnimatedSprites
 import View.StaticSprites ( WallPicture, testSpriteIO, window)
+import Controller
 
 import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
