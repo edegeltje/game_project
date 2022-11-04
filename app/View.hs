@@ -83,6 +83,6 @@ testGameState' =
   MkGameState
     Playing testMaze 1 2 testEntities InputNeutral 0 (MkSettings 1 1)
 calcGameState t = MkGameState
-    Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
+    (SettingMenu VolumeOption) testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
 
 testView = animateIO window black (view . calcGameState) controllerSetRedraw
