@@ -8,7 +8,7 @@ import Model.Menus
 import Model.Settings
 import qualified Data.Map as DM
 import View.AnimatedSprites
-import View.StaticSprites ( WallPicture, testSpriteIO, window)
+import View.StaticSprites ( WallPicture, window)
 
 import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
@@ -28,7 +28,7 @@ view gs = VM.view gs
 
 
 testPlayer = MkPlayer 
-      (MkPosition 0 0) 
+      (0,0) 
       South 
       Weak
 
@@ -47,7 +47,7 @@ testGameState = MkGameState
   (MkSettings 0 0)
 
 
-tuples = [(x,y) | x<- [-2,20], y <- [-2,20]]
+tuples = [(x,y) | x<- [-2..20], y <- [-220]]
 contentCalc :: (Int,Int) -> BottomLayerContent
 contentCalc (-2,_)  = Wall
 contentCalc (20,_) = Wall
@@ -58,31 +58,31 @@ contentCalc (_,2)  = PowerDot
 contentCalc _      = Empty
 content = map contentCalc tuples
 
-testMaze = DM.fromList $ zip (map fromIntTuple tuples) content :: BottomLayer
+testMaze = DM.fromList $ zip tuples content :: BottomLayer
 
 testEnemies = [
-  MkEnemy (fromIntTuple (2,1)) North Inky Alive,
-  MkEnemy (fromIntTuple (2,3)) East Pinky Alive,
-  MkEnemy (fromIntTuple (4,1)) West Blinky Alive,
-  MkEnemy (fromIntTuple (4,3)) South Clyde Alive
+  MkEnemy (2,1) North Inky Alive,
+  MkEnemy (2,3) East Pinky Alive,
+  MkEnemy (4,1) West Blinky Alive,
+  MkEnemy (4,3) South Clyde Alive
   ]
 
 testFruits = [
-  MkFruit Cherry     (fromIntTuple (7,1)),
-  MkFruit Bell       (fromIntTuple (7,3)),
-  MkFruit Apple      (fromIntTuple (9,1)),
-  MkFruit Galaxian   (fromIntTuple (9,3)),
-  MkFruit Key        (fromIntTuple (11,1)),
-  MkFruit Melon      (fromIntTuple (11,3)),
-  MkFruit Orange     (fromIntTuple (13,1)),
-  MkFruit Strawberry (fromIntTuple (13,3))]
-testPlayer' = MkPlayer (fromIntTuple (15,1)) West Weak
+  MkFruit Cherry     (7,1),
+  MkFruit Bell       (7,3),
+  MkFruit Apple      (9,1),
+  MkFruit Galaxian   (9,3),
+  MkFruit Key        (11,1),
+  MkFruit Melon      (11,3),
+  MkFruit Orange     (13,1),
+  MkFruit Strawberry (13,3)]
+testPlayer' = MkPlayer (15,1) West Weak
 
 testEntities = MkEntityRecord testPlayer' testEnemies testFruits
 testGameState' = 
   MkGameState
     Playing testMaze 1 2 testEntities InputNeutral 0 (MkSettings 1 1)
 calcGameState t = MkGameState
-    (SettingMenu VolumeOption) testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
+    Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
 
 testView = animateIO window black (view . calcGameState) controllerSetRedraw

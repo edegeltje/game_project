@@ -13,13 +13,13 @@ foo = putStrLn "foo function in Model"
 
 data GameState = MkGameState {
   menuState :: MenuState,
-  maze :: BottomLayer,
-  score :: Score,
-  level :: Int,
-  entities :: EntityRecord,
-  inputBuffer :: InputButton,
-  time :: Float,
-  settings :: Settings
+  maze :: !BottomLayer,
+  score :: !Score,
+  level :: !Int,
+  entities :: !EntityRecord,
+  inputBuffer :: !InputButton,
+  time :: !Float,
+  settings :: !Settings
   }
 
 type Score = Int
@@ -38,9 +38,9 @@ type BottomLayer' = String
 -- this is how we will represent the maze in the Json files 
 
 data Level = MkLevel {
-  levelNumber :: Int,
-  levelMaze :: BottomLayer',
-  levelEnemies :: [EnemyEntity],
+  levelNumber :: !Int,
+  levelMaze :: !BottomLayer',
+  levelEnemies :: ![EnemyEntity],
   levelFruits :: [Fruit]
 }
 -- the type for the levels we store in the json files

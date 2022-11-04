@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use tuple-section" #-}
 module Controller.JsonInteract where
 
 import qualified Data.Map as DM
@@ -34,7 +36,7 @@ lineToContentMap :: String -> DM.Map Int BottomLayerContent
 lineToContentMap line = DM.fromList $ zip [0..] $ map charToContent line
 
 addIntToKey :: Int -> DM.Map Int BottomLayerContent -> BottomLayer
-addIntToKey y = DM.mapKeys $ flip MkPosition y
+addIntToKey y = DM.mapKeys $ \x -> (x,y)
 
 linesToContentMap :: [String] -> BottomLayer
 linesToContentMap lines = DM.unions $ zipWith addIntToKey [0..] lineMaps

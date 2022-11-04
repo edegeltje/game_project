@@ -37,18 +37,21 @@ data FruitSprites = MkFSprites{
 
 
 smallDot :: SmallDotPicture
-smallDot = color white $ circleSolid 10
+smallDot = color white $ circleSolid' (1/8)
 powerDot :: PowerDotPicture
-powerDot = color white $ circleSolid 20
+powerDot = color white $ circleSolid' (1/4)
 
 innerCornerWall :: WallPicture
-innerCornerWall = color blue (polygon' [(0.5, 0), (1, 0), (1, 0.5), (0.5, 0.5)])
+innerCornerWall = color blue $ polygon' 
+  [(0, 0), (0.5, 0), (0.5, -0.5), (0, -0.5)]
 
 straightWall :: WallPicture
-straightWall = color blue (polygon' [(0.5, 0), (1,0), (1,1),(0.5,1)])
+straightWall = color blue $ polygon'
+  [(0, -0.5), (0.5,-0.5), (0.5,0.5),(0,0.5)]
 
 outerCornerWall :: WallPicture
-outerCornerWall = color blue (polygon' [(0.5,0), (1,0), (1,1), (0,1), (0,0.5),(0.5,0.5)])
+outerCornerWall = color blue $ polygon'
+  [(0,0), (-0.5,0), (-0.5,0.5), (0.5,0.5), (0.5,-0.5),(0,-0.5)]
 
 appleIO :: IO ApplePicture
 appleIO = loadBMP "bitmaps/apple.bmp"
@@ -89,20 +92,13 @@ instance Renderable Fruit where
 
 
 dirToAngle :: Direction -> Float
-dirToAngle North = 270
-dirToAngle East  = 180
-dirToAngle South = 90
-dirToAngle West  = 0
+dirToAngle North = 180
+dirToAngle East  = 270
+dirToAngle South = 0
+dirToAngle West  = 90
 
 
 window = InWindow "Pacman" (800, 600) (10, 10)
-
-testSprite = animate window black (const smallDot)
-testSpriteIO = do 
-  sprite <- cherryIO
-  animate window black $ const sprite
-
-
 
 drawBottomLayer :: BottomLayer -> Picture
 drawBottomLayer maze = DM.foldrWithKey' addToPicture blank maze
@@ -127,44 +123,77 @@ getPositionContent position maze = DMB.fromMaybe Wall $ DM.lookup position maze
 
 
 drawWallSprite :: Position -> BottomLayer -> WallPicture
-drawWallSprite (MkPosition x y) maze = rotate (dirToAngle $ orientWall enwsContent) wallSprite 
+drawWallSprite pos maze = rotate (dirToAngle dir) wallSprite 
   where
-    nePosition = MkPosition (x+1) (y+1)
-    nwPosition = MkPosition (x-1) (y+1)
-    swPosition = MkPosition (x-1) (y-1)
-    sePosition = MkPosition (x+1) (y-1)
-    enwsContent = map (`getPositionContent` maze) [
-      nePosition,
-      nwPosition,
-      swPosition,
-      sePosition
-      ] -- this ordering to traverse in counterclockwise direction
-    neighbouringWalls = length (filter (== Wall) enwsContent)
-    wallSprite = case neighbouringWalls of
-      1 -> innerCornerWall
-      2 -> straightWall
-      3 -> outerCornerWall
-      _ -> blank
+    (wallSprite,dir) = getWallSpriteAndOrientation $ getNeighbours pos maze
 
-orientWall :: [BottomLayerContent] -> Direction
-orientWall enwsContent = case enwsContent of
-  [Wall,_,Wall,Wall] -> West
-  [Wall,_,_,Wall] -> South
-  [Wall,_,_,_] -> East
-  [_,Wall,_,_] -> North
-  [_,_,Wall,_] -> West
-  _ -> South
+getNeighbours :: Position -> BottomLayer -> [BottomLayerContent]
+getNeighbours (x,y) maze = map (`getPositionContent` maze) [
+  nwPosition, nPosition, nePosition,
+  wPosition, {-position-} ePosition,
+  swPosition, sPosition, sePosition] 
+    where
+    ePosition  = (x+1,y  )
+    nePosition = (x+1,y+1)
+    nPosition  = (x  ,y+1)
+    nwPosition = (x-1,y+1)
+    wPosition  = (x-1,y  )
+    swPosition = (x-1,y-1)
+    sPosition  = (x  ,y-1)
+    sePosition = (x+1,y-1)
 
-testMazeList' = zip [fromIntTuple(x,y) | x <- [0..5], y <- [0..5]] [
-  Wall, Wall, Wall, Wall, Wall,
-  Wall, Wall, Wall, Wall, Wall,
-  Wall, Wall, Empty, Wall, Wall,
-  Wall, Wall, Wall, Wall, Wall,
-  Wall, Wall, Wall, Wall, Wall]
-testMaze' = DM.fromList testMazeList'
+getWallSpriteAndOrientation :: [BottomLayerContent] -> (WallPicture, Direction)
+getWallSpriteAndOrientation enwsContent = case enwsContent of
+      [ Wall,Wall,Wall,
+        Wall,     Wall,
+        Wall,Wall,Wall] -> (blank, North)
+      
+      [ _   ,Wall,Wall,
+        Wall,     Wall,
+        Wall,Wall,Wall] -> (outerCornerWall, West)
+      
+      [ Wall,Wall,_   ,
+        Wall,     Wall,
+        Wall,Wall,Wall] -> (outerCornerWall, North)
+      
+      [ Wall,Wall,Wall,
+        Wall,     Wall,
+        Wall,Wall,_   ] -> (outerCornerWall, East)
+      
+      [ Wall,Wall,Wall,
+        Wall,     Wall,
+        _   ,Wall,Wall] -> (outerCornerWall, South)
+      
+      [ _   ,_   ,_   ,
+        Wall,     Wall,
+        _   ,Wall,_   ] -> (straightWall, West)
 
-testMazeDrawing = display window black $ drawWallSprite (fromIntTuple (3, 3)) testMaze'
-
-testBottomLayer = display window black $ pictures [color yellow $ rectangleSolid 50 50,
-  drawBottomLayer testMaze'  
-  ]
+      [ _   ,Wall,_   ,
+        Wall,     _   ,
+        _   ,Wall,_   ] -> (straightWall, North)
+      
+      [ _   ,Wall,_   ,
+        Wall,     Wall,
+        _   ,_   ,_   ] -> (straightWall, East)
+      
+      [ _   ,Wall,_   ,
+        _   ,     Wall,
+        _   ,Wall,_   ] -> (straightWall, South)
+      
+      [ _   ,Wall,_   ,
+        Wall,     _   ,
+        _   ,_   ,_   ] -> (innerCornerWall, North)
+      
+      [ _   ,Wall,_   ,
+        _   ,     Wall,
+        _   ,_   ,_   ] -> (innerCornerWall, East)
+      
+      [ _   ,_   ,_   ,
+        _   ,     Wall,
+        _   ,Wall,_   ] -> (innerCornerWall, South)
+      
+      [ _   ,_   ,_   ,
+        Wall,     _   ,
+        _   ,Wall,_   ] -> (innerCornerWall, West)
+      
+      _                 -> (blank, North)

@@ -1,18 +1,13 @@
 module Model.Entities where
 import Graphics.Gloss
 
-data Position = MkPosition {xposition:: Int, yposition::Int}
-  deriving (Eq, Ord)
-toFloatTuple :: Position -> (Float,Float)
-toFloatTuple p = (fromIntegral $ xposition p, fromIntegral $ yposition p)
-fromIntTuple :: (Int,Int) -> Position
-fromIntTuple = uncurry MkPosition
+type Position = (Int,Int)
 
-instance Show Position where
-  show (MkPosition x y) = "Position" ++ '(' : show x ++ ',' : (show y ++ ")")
+toFloatTuple :: Position -> (Float,Float)
+toFloatTuple (x,y) = (fromIntegral x, fromIntegral y)
 
 data Direction = North | South | East | West 
-  deriving (Eq)
+  deriving (Eq, Show)
 
 class Positioned a where
   getPosition :: a -> Position
@@ -34,9 +29,9 @@ class (Positioned a) => Agent a where
 data PowerState = PoweredUp | Weak
 
 data PlayerEntity = MkPlayer {
-  playerPosition :: Position,
-  playerMovementDirection :: Direction,
-  powerState :: PowerState
+  playerPosition :: !Position,
+  playerMovementDirection :: !Direction,
+  powerState :: !PowerState
 }
 instance Positioned PlayerEntity where
   getPosition = playerPosition
@@ -51,7 +46,7 @@ data EnemyMovementType = Blinky | Inky | Pinky | Clyde
 data EnemyStatus = Alive | Dead | Scared
 
 data EnemyEntity = MkEnemy {
-  enemyPosition :: Position,
+  enemyPosition :: !Position,
   enemyMovementDirection :: Direction,
   enemyMovementType :: EnemyMovementType,
   enemyStatus :: EnemyStatus

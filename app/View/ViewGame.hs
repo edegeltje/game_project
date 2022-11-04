@@ -19,10 +19,9 @@ drawConstantSprites MkGameState {
       ]
 
 view :: GameState -> IO Picture
-view gs = return outerCornerWall
-  --picturesIO [ return $ drawBottomLayer $ maze gs
-  --, renderEntitiesIO (entities gs) (time gs)
-  -- ]
+view gs = picturesIO [ return $ drawBottomLayer $ maze gs,
+  renderEntitiesIO (entities gs) (time gs)
+  ]
 
 renderEntitiesIO :: EntityRecord -> Float -> IO Picture
 renderEntitiesIO (MkEntityRecord player enemies fruits) t = picturesIO layerlist
@@ -42,3 +41,4 @@ renderRenderableIO t thing = do
 
 renderRenderableListIO :: Renderable a => Float -> [a] -> IO Picture
 renderRenderableListIO t = (pictures <$>) . mapM (renderRenderableIO t)
+

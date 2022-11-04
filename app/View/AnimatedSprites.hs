@@ -105,7 +105,7 @@ dirToEye dir = translate' northCorrection $ pictures [
       northCorrection = if dir == North then (0,0.4) else (0,0)
 
 testGhost = MkEnemy
-  (MkPosition 0 0)
+  (0,0)
   South
   Clyde
   Alive
