@@ -13,10 +13,15 @@ inputFromButton gs = const $ return gs
 
 
 navigatePauseMenu :: GameState -> InputButton -> IO GameState
-navigatePauseMenu gs@MkGameState {menuState = PauseMenu ContinueOption} = flip eventPauseMenuContinue gs
-navigatePauseMenu gs@MkGameState {menuState = PauseMenu PauseSettingOption} = flip eventPauseMenuSetting gs
-navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToStartOption} = flip eventPauseMenuStart gs
-navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToDesktopOption} = flip eventPauseMenuDesktop gs
+navigatePauseMenu gs@MkGameState {menuState = PauseMenu ContinueOption} =
+  flip eventPauseMenuContinue gs
+navigatePauseMenu gs@MkGameState {menuState = PauseMenu PauseSettingOption} =
+  flip eventPauseMenuSetting gs
+navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToStartOption} =
+  flip eventPauseMenuStart gs
+navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToDesktopOption} =
+  flip eventPauseMenuDesktop gs
+navigatePauseMenu gs = const $ return gs
 
 eventPauseMenuContinue :: InputButton -> GameState -> IO GameState
 eventPauseMenuContinue inputUp gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
@@ -40,9 +45,13 @@ eventPauseMenuDesktop inputSelect gs = exitSuccess
 
 
 navigateStartMenu :: GameState -> InputButton -> IO GameState
-navigateStartMenu gs@MkGameState {menuState = StartMenu PlayOption} = flip eventStartMenuPlay gs
-navigateStartMenu gs@MkGameState {menuState = StartMenu StartSettingOption} = flip eventStartMenuSetting gs
-navigateStartMenu gs@MkGameState {menuState = StartMenu ExitOption} = flip eventStartMenuExit gs
+navigateStartMenu gs@MkGameState {menuState = StartMenu PlayOption} =
+  flip eventStartMenuPlay gs
+navigateStartMenu gs@MkGameState {menuState = StartMenu StartSettingOption} = 
+  flip eventStartMenuSetting gs
+navigateStartMenu gs@MkGameState {menuState = StartMenu ExitOption} = 
+  flip eventStartMenuExit gs
+navigateStartMenu gs = const $ return gs
 
 eventStartMenuPlay :: InputButton -> GameState -> IO GameState
 eventStartMenuPlay inputUp gs = return (gs {menuState = StartMenu ExitOption})
@@ -61,8 +70,11 @@ eventStartMenuExit inputSelect gs = exitSuccess
 
 
 navigateSettingMenu :: GameState -> InputButton -> IO GameState
-navigateSettingMenu gs@MkGameState {menuState = SettingMenu VolumeOption} = flip eventSettingMenuVolume gs
-navigateSettingMenu gs@MkGameState {menuState = SettingMenu SpeedOption} = flip eventSettingMenuSpeed gs
+navigateSettingMenu gs@MkGameState {menuState = SettingMenu VolumeOption} =
+  flip eventSettingMenuVolume gs
+navigateSettingMenu gs@MkGameState {menuState = SettingMenu SpeedOption} = 
+  flip eventSettingMenuSpeed gs
+navigateSettingMenu gs = const $ return gs
 
 eventSettingMenuVolume :: InputButton -> GameState -> IO GameState
 eventSettingMenuVolume inputUp gs    = return (gs {menuState = SettingMenu SpeedOption})

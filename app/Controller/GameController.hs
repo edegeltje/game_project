@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 module Controller.GameController where
 import Model
 import Model.Menus
@@ -18,10 +17,9 @@ step gs@MkGameState{inputBuffer = InputBack} t = return
     time = time gs + t,
     menuState = PauseMenu ContinueOption
     }
-step gs@MkGameState{entities = currentEntities@MkEntityRecord{player = currentPlayer}} t 
+step gs@MkGameState{ entities = currentEntities@MkEntityRecord{player = currentPlayer}} t 
     | dirPossible gs (getPosition currentPlayer) (inputToDir (inputBuffer gs)) 
       = return gs {
-        inputBuffer = InputNeutral, 
         time = time gs + t,  
         entities = currentEntities{
           player = currentPlayer{
@@ -55,13 +53,10 @@ inputToDir InputDown = South
 inputToDir _ = North
 
 calcNewPosition :: Position -> Direction -> Position
-calcNewPosition (x,y) North = (x,y + tILESIZEInt)
-calcNewPosition (x,y) East = (x+ tILESIZEInt, y)
-calcNewPosition (x,y) South = (x,y - tILESIZEInt)
-calcNewPosition (x,y) West = (x - tILESIZEInt,y)
+calcNewPosition (x,y) North = (x,y + 1)
+calcNewPosition (x,y) East = (x+ 1, y)
+calcNewPosition (x,y) South = (x,y - 1)
+calcNewPosition (x,y) West = (x - 1,y)
 
 dirPossible :: GameState -> Position -> Direction -> Bool
 dirPossible gs pos dir = getPositionContent (calcNewPosition pos dir) (maze gs) /= Wall
-
-tILESIZEInt :: Int
-tILESIZEInt = round tILESIZE

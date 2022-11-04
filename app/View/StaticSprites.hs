@@ -10,30 +10,26 @@ import Model
 
 import Model.Entities
 
-type SmallDotPicture = Picture
-type PowerDotPicture = Picture
-type CherryPicture = Picture
-type StrawberryPicture = Picture
-type OrangePicture = Picture
-type ApplePicture = Picture
-type MelonPicture = Picture
-type GalaxianPicture = Picture
-type BellPicture = Picture
-type KeyPicture = Picture
-type WallPicture = Picture
 
-data FruitSprites = MkFSprites{
-    smallDotSprite :: SmallDotPicture,
-    powerDotSprite :: PowerDotPicture,
-    appleSprite :: ApplePicture,
-    bellSprite :: BellPicture,
-    cherrySprite :: CherryPicture,
-    galaxianSprite :: GalaxianPicture,
-    keySprite :: KeyPicture,
-    melonSprite :: MelonPicture,
-    orangeSprite :: OrangePicture,
-    strawberrySprite :: StrawberryPicture
-    }
+fruitSpritesIO = do
+  apple <- appleIO
+  bell <- bellIO
+  cherry <- cherryIO
+  galaxian <- galaxianIO
+  key <- keyIO
+  melon <- melonIO
+  orange <- orangeIO
+  strawberry <- strawberryIO
+  return $ MkFSprites
+    apple
+    bell
+    cherry
+    galaxian
+    key
+    melon
+    orange
+    strawberry
+  
 
 
 smallDot :: SmallDotPicture
@@ -78,17 +74,16 @@ strawberryIO :: IO StrawberryPicture
 strawberryIO = loadBMP "bitmaps/strawberry.bmp"
 
 instance Renderable Fruit where
-  getSpriteIO MkFruit {fruitType = ft} _ = uncurry scale (tileToPoint (1/8,1/8)) <$>
+  getSprite fs MkFruit {fruitType = ft} _ = uncurry scale (tileToPoint (1/8,1/8)) $
     case ft of
-      Cherry -> cherryIO
-      Strawberry -> strawberryIO
-      Orange -> orangeIO
-      Apple -> appleIO
-      Melon -> melonIO
-      Galaxian -> galaxianIO
-      Bell -> bellIO
-      Key -> keyIO
-
+      Cherry -> cherrySprite fs
+      Strawberry -> strawberrySprite fs
+      Orange -> orangeSprite fs
+      Apple -> appleSprite fs
+      Melon -> melonSprite fs
+      Galaxian -> galaxianSprite fs
+      Bell -> bellSprite fs
+      Key -> keySprite fs
 
 
 dirToAngle :: Direction -> Float

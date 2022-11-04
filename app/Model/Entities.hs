@@ -1,6 +1,28 @@
 module Model.Entities where
 import Graphics.Gloss
 
+type SmallDotPicture = Picture
+type PowerDotPicture = Picture
+type CherryPicture = Picture
+type StrawberryPicture = Picture
+type OrangePicture = Picture
+type ApplePicture = Picture
+type MelonPicture = Picture
+type GalaxianPicture = Picture
+type BellPicture = Picture
+type KeyPicture = Picture
+type WallPicture = Picture
+
+data FruitSprites = MkFSprites{
+    appleSprite :: ApplePicture,
+    bellSprite :: BellPicture,
+    cherrySprite :: CherryPicture,
+    galaxianSprite :: GalaxianPicture,
+    keySprite :: KeyPicture,
+    melonSprite :: MelonPicture,
+    orangeSprite :: OrangePicture,
+    strawberrySprite :: StrawberryPicture
+    }
 type Position = (Int,Int)
 
 toFloatTuple :: Position -> (Float,Float)
@@ -13,7 +35,7 @@ class Positioned a where
   getPosition :: a -> Position
 
 class Positioned a => Renderable a where
-  getSpriteIO :: a -> Float -> IO Picture
+  getSprite ::  FruitSprites -> a -> Float -> Picture
 
 data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,

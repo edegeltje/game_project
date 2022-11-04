@@ -26,14 +26,14 @@ animateSprites gameState time = MkASprites (animatePacman player' time)
     ghosts = enemies $ entities gameState
 
 instance Renderable PlayerEntity where
-  getSpriteIO = (return .) . animatePacman
+  getSprite = const animatePacman
 
 animatePacman :: PlayerEntity -> Float -> PacmanPicture
 
 animatePacman player = rotate (dirToAngle dir) . pacmanOpenMouth where
   dir = getDirection player
 
-openingtime = 0.40
+openingtime = 1
 
 pacmanOpenMouth :: Float -> PacmanPicture
 pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
@@ -60,7 +60,7 @@ animateGhost ghost time = pictures [
     eye = dirToEye dir
 
 instance Renderable EnemyEntity where
-  getSpriteIO = (return .) . animateGhost
+  getSprite = const animateGhost
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270

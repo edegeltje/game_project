@@ -1,16 +1,19 @@
 module Main where
 
+import Graphics.Gloss.Interface.IO.Game
+
 import Model
 
 import Controller
 
 import View
-import View.StaticSprites ()
+import View.StaticSprites (window, fruitSpritesIO)
 import View.AnimatedSprites (renderTestGhost)
 
 main :: IO ()
 main = do foo
           bar
           baz
-          testView
+          fruitSprites <- fruitSpritesIO
+          playIO window black 60 testGameState' (return . view fruitSprites) input step
           

@@ -7,10 +7,11 @@ import Model.Entities
 import Graphics.Gloss.Interface.IO.Animate
 import Model.Settings
 
-view :: GameState -> IO Picture
-view gs@MkGameState{menuState = PauseMenu _}   = picturesIO [return (pauseMenuPicture gs)]
-view gs@MkGameState{menuState = StartMenu _}   = picturesIO [return (startMenuPicture gs)]
-view gs@MkGameState{menuState = SettingMenu _} = picturesIO [return (settingMenuPicture gs)]
+view :: GameState -> Picture
+view gs@MkGameState{menuState = PauseMenu _}   = pictures [pauseMenuPicture gs]
+view gs@MkGameState{menuState = StartMenu _}   = pictures [startMenuPicture gs]
+view gs@MkGameState{menuState = SettingMenu _} = pictures [settingMenuPicture gs]
+view _ = blank
 
 
 pauseMenuPicture :: GameState -> Picture

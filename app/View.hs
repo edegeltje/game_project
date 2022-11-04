@@ -8,7 +8,7 @@ import Model.Menus
 import Model.Settings
 import qualified Data.Map as DM
 import View.AnimatedSprites
-import View.StaticSprites ( WallPicture, window)
+import View.StaticSprites (window, fruitSpritesIO)
 import Controller
 
 import qualified View.ViewGame as VG
@@ -23,9 +23,9 @@ test =  display (InWindow "example" (800, 600) (0, 0)) black (color green (circl
 baz :: IO()
 baz = putStrLn "baz function in View"
 
-view :: GameState -> IO Picture
-view gs@MkGameState {menuState = Playing} = VG.view gs
-view gs = VM.view gs
+view :: FruitSprites -> GameState -> Picture
+view fs gs@MkGameState {menuState = Playing} = VG.view fs gs
+view fs gs = VM.view gs
 
 
 testPlayer = MkPlayer 
@@ -48,7 +48,7 @@ testGameState = MkGameState
   (MkSettings 0 0)
 
 
-tuples = [(x,y) | x<- [-2..20], y <- [-220]]
+tuples = [(x,y) | x<- [-2..20], y <- [-2..20]]
 contentCalc :: (Int,Int) -> BottomLayerContent
 contentCalc (-2,_)  = Wall
 contentCalc (20,_) = Wall
@@ -86,4 +86,7 @@ testGameState' =
 calcGameState t = MkGameState
     Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
 
-testView = animateIO window black (view . calcGameState) controllerSetRedraw
+testView = do
+  fs <- fruitSpritesIO
+  animateIO window black
+    (return . view fs . calcGameState) (const $ return ())
