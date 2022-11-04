@@ -5,11 +5,11 @@ import Model
 import Controller
 
 import View
-import View.StaticSprites (testSpriteIO, testSprite)
+import View.StaticSprites (testSpriteIO, testSprite, testBottomLayer, testMazeDrawing)
 import View.AnimatedSprites (renderTestGhost)
 
 main :: IO ()
 main = do foo
           bar
           baz
-          testView
+          testMazeDrawing

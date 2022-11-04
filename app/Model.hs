@@ -1,6 +1,5 @@
 module Model where
 
-
 import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import qualified Data.Map as DM
@@ -30,7 +29,7 @@ type BottomLayer = DM.Map Position BottomLayerContent
 data InputButton = InputNeutral | InputUp | InputDown | InputLeft | InputRight | InputSelect | InputBack
 
 data BottomLayerContent = Wall | SmallDot | PowerDot | Empty
-  deriving Eq
+  deriving (Eq, Show)
 {-
 This datastructure to prevent non-accesible states from being represented
 -}

@@ -123,14 +123,12 @@ spriteFromContext position maze = case getPositionContent position maze of
   Wall     -> drawWallSprite position maze
 
 getPositionContent :: Position -> BottomLayer -> BottomLayerContent
-getPositionContent position maze = DMB.fromMaybe Empty $ DM.lookup position maze
+getPositionContent position maze = DMB.fromMaybe Wall $ DM.lookup position maze
 
 
 drawWallSprite :: Position -> BottomLayer -> WallPicture
-drawWallSprite position maze = rotate (dirToAngle $ orientWall enwsContent) wallSprite 
+drawWallSprite (MkPosition x y) maze = rotate (dirToAngle $ orientWall enwsContent) wallSprite 
   where
-    x = xposition position
-    y = yposition position
     nePosition = MkPosition (x+1) (y+1)
     nwPosition = MkPosition (x-1) (y+1)
     swPosition = MkPosition (x-1) (y-1)
@@ -156,3 +154,17 @@ orientWall enwsContent = case enwsContent of
   [_,Wall,_,_] -> North
   [_,_,Wall,_] -> West
   _ -> South
+
+testMazeList' = zip [fromIntTuple(x,y) | x <- [0..5], y <- [0..5]] [
+  Wall, Wall, Wall, Wall, Wall,
+  Wall, Wall, Wall, Wall, Wall,
+  Wall, Wall, Empty, Wall, Wall,
+  Wall, Wall, Wall, Wall, Wall,
+  Wall, Wall, Wall, Wall, Wall]
+testMaze' = DM.fromList testMazeList'
+
+testMazeDrawing = display window black $ drawWallSprite (fromIntTuple (3, 3)) testMaze'
+
+testBottomLayer = display window black $ pictures [color yellow $ rectangleSolid 50 50,
+  drawBottomLayer testMaze'  
+  ]

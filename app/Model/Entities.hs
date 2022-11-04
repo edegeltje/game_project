@@ -8,6 +8,9 @@ toFloatTuple p = (fromIntegral $ xposition p, fromIntegral $ yposition p)
 fromIntTuple :: (Int,Int) -> Position
 fromIntTuple = uncurry MkPosition
 
+instance Show Position where
+  show (MkPosition x y) = "Position" ++ '(' : show x ++ ',' : (show y ++ ")")
+
 data Direction = North | South | East | West 
   deriving (Eq)
 
