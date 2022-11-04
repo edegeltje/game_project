@@ -63,12 +63,6 @@ eventStartMenuExit inputSelect gs = exitSuccess
 navigateSettingMenu :: GameState -> InputButton -> IO GameState
 navigateSettingMenu gs@MkGameState {menuState = SettingMenu VolumeOption} = flip eventSettingMenuVolume gs
 navigateSettingMenu gs@MkGameState {menuState = SettingMenu SpeedOption} = flip eventSettingMenuSpeed gs
---navigateSettingMenu gs@MkGameState {menuState = SettingMenu VolumeOption, settings = currentSettings} = return (gs {})
---    where
---        currentVolume = volume $ settings gs
---        newSettings = currentSettings {volume = newVolume}
---        newVolume = 
-
 
 eventSettingMenuVolume :: InputButton -> GameState -> IO GameState
 eventSettingMenuVolume inputUp gs    = return (gs {menuState = SettingMenu SpeedOption})
