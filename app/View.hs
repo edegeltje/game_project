@@ -25,7 +25,10 @@ baz = putStrLn "baz function in View"
 
 view :: FruitSprites -> GameState -> Picture
 view fs gs@MkGameState {menuState = Playing} = VG.view fs gs
-view fs gs = VM.view gs
+view fs gs = pictures [VM.view gs
+  ,color white $ translate' (-30,-10) $ scale 0.2 0.2 $ text $ show $ inputBuffer gs,
+  color white $ translate' (-30,-30) $ scale 0.2 0.2 $ text $ show $ menuState gs
+  ]
 
 
 testPlayer = MkPlayer 

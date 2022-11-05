@@ -10,56 +10,43 @@ import Model.Settings
 view :: GameState -> Picture
 view gs@MkGameState{menuState = PauseMenu _}   = pictures [pauseMenuPicture gs]
 view gs@MkGameState{menuState = StartMenu _}   = pictures [startMenuPicture gs]
-view gs@MkGameState{menuState = SettingMenu _} = pictures [settingMenuPicture gs]
 view _ = blank
 
+menuOptionPicture :: Color -> String -> Picture
+menuOptionPicture bgColor option = pictures [
+        color bgColor (polygon' [
+          (0,0),
+          (80,0),
+          (80,16),
+          (0,16)
+          ]),
+        translate' (0,8) (scale 0.5 0.5 (text option))
+        ]
+
+makeSettingMenu :: Settings -> SettingMenuState -> Picture
+makeSettingMenu s option = translate' (-32,16) $
+  pictures [ translate' (0,-16*i) $ menuOptionPicture (getColor o) name | 
+    ((o, name), i) <- zip (getSettingOptions s) [0..]]
+      where getColor a = if a == option then green else yellow
+
+makeMenu :: MenuOption a => a -> Picture
+makeMenu option = translate' (-32,16) $
+  pictures [ translate' (0,-16*i) $ menuOptionPicture (getColor o) name | 
+    ((o, name), i) <- zip (optionsWithNames option) [0..]]
+      where getColor a = if a == option then green else yellow 
 
 pauseMenuPicture :: GameState -> Picture
-pauseMenuPicture gs@MkGameState {menuState = PauseMenu ContinueOption} = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Continue"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to start"))]),
-                                                                                                        translate' (0, -(tILESIZE * 6)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-pauseMenuPicture gs@MkGameState {menuState = PauseMenu PauseSettingOption} = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Continue"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to start"))]),
-                                                                                                        translate' (0, -(tILESIZE * 6)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-pauseMenuPicture gs@MkGameState {menuState = PauseMenu ExitToStartOption} = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Continue"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to start"))]),
-                                                                                                        translate' (0, -(tILESIZE * 6)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-pauseMenuPicture gs                                                       = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Continue"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to start"))]),
-                                                                                                        translate' (0, -(tILESIZE * 6)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
+pauseMenuPicture MkGameState {menuState = PauseMenu sm@(PauseSettingOption SuperMenu)} = 
+  makeMenu sm
+pauseMenuPicture gs@MkGameState {menuState = PauseMenu (PauseSettingOption smState)} = 
+  makeSettingMenu (settings gs) smState
+pauseMenuPicture MkGameState {menuState = PauseMenu pauseOption} = makeMenu pauseOption
+pauseMenuPicture _ = blank
 
 startMenuPicture :: GameState -> Picture
-startMenuPicture gs@MkGameState {menuState = StartMenu PlayOption}         = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Play"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-startMenuPicture gs@MkGameState {menuState = StartMenu StartSettingOption} = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Play"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-startMenuPicture gs                                                        = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Play"))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Settings"))]),
-                                                                                                        translate' (0, -(tILESIZE * 4)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Exit to desktop"))])
-                                                                                                         ])
-                                                                                                    
-settingMenuPicture :: GameState -> Picture
-settingMenuPicture gs@MkGameState {menuState = SettingMenu VolumeOption} = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Volume")), translate' (tILESIZE * 8, tILESIZE) (scale 0.5 0.5 (text currentVolume))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Speed")), translate' (tILESIZE * 8, tILESIZE) (scale 0.5 0.5 (text currentSpeed))])
-                                                                                                         ])
-                                                                            where
-                                                                                currentVolume = show (volume $ settings gs)
-                                                                                currentSpeed = show (gameSpeed $ settings gs)
-settingMenuPicture gs                                                    = translate' (-tILESIZE * 4, tILESIZE * 2) (pictures [pictures [color yellow (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]),  translate' (0, tILESIZE) (scale 0.5 0.5 (text "Volume")), translate' (tILESIZE * 8, tILESIZE) (scale 0.5 0.5 (text currentVolume))],
-                                                                                                        translate' (0, -(tILESIZE * 2)) (pictures [color green (polygon' [(0,0), (tILESIZE * 10,0), (tILESIZE * 10,tILESIZE * 2), (0,tILESIZE * 2)]), translate' (0, tILESIZE) (scale 0.5 0.5 (text "Speed")), translate' (tILESIZE * 8, tILESIZE) (scale 0.5 0.5 (text currentSpeed))])
-                                                                                                         ])
-                                                                            where
-                                                                                currentVolume = show (volume $ settings gs)
-                                                                                currentSpeed = show (gameSpeed $ settings gs)
+startMenuPicture MkGameState {menuState = StartMenu sm@(StartSettingOption SuperMenu)} = 
+  makeMenu sm
+startMenuPicture gs@MkGameState {menuState = StartMenu (StartSettingOption smState)} = 
+  makeSettingMenu (settings gs) smState
+startMenuPicture MkGameState {menuState = StartMenu startOption} = makeMenu startOption
+startMenuPicture _ = blank

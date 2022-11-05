@@ -23,6 +23,8 @@ data FruitSprites = MkFSprites{
     orangeSprite :: OrangePicture,
     strawberrySprite :: StrawberryPicture
     }
+  deriving Show
+
 type Position = (Int,Int)
 
 toFloatTuple :: Position -> (Float,Float)
@@ -40,8 +42,8 @@ class Positioned a => Renderable a where
 data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,
   enemies :: [EnemyEntity],
-  fruits :: [Fruit]
-}
+  fruits :: [Fruit]}
+  deriving Show
 
 class (Positioned a) => Agent a where
   setPosition :: a -> Position -> a
@@ -49,12 +51,14 @@ class (Positioned a) => Agent a where
   setDirection :: a -> Direction -> a
 
 data PowerState = PoweredUp | Weak
+  deriving Show
 
 data PlayerEntity = MkPlayer {
   playerPosition :: !Position,
   playerMovementDirection :: !Direction,
-  powerState :: !PowerState
-}
+  powerState :: !PowerState}
+  deriving Show
+
 instance Positioned PlayerEntity where
   getPosition = playerPosition
 
@@ -64,15 +68,15 @@ instance Agent PlayerEntity where
   setDirection player newDirection = player {playerMovementDirection = newDirection}
 
 data EnemyMovementType = Blinky | Inky | Pinky | Clyde
-
+  deriving Show
 data EnemyStatus = Alive | Dead | Scared
-
+  deriving Show
 data EnemyEntity = MkEnemy {
   enemyPosition :: !Position,
   enemyMovementDirection :: Direction,
   enemyMovementType :: EnemyMovementType,
-  enemyStatus :: EnemyStatus
-}
+  enemyStatus :: EnemyStatus}
+  deriving Show
 
 instance Positioned EnemyEntity where
   getPosition = enemyPosition
@@ -83,10 +87,11 @@ instance Agent EnemyEntity where
   setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
 
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
+  deriving Show
 data Fruit = MkFruit {
   fruitType :: FruitType,
-  fruitPosition :: Position
-}
+  fruitPosition :: Position}
+  deriving Show
 
 instance Positioned Fruit where
   getPosition = fruitPosition

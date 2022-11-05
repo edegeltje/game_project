@@ -45,5 +45,5 @@ keyToInput key = case key of
   _                       -> InputNeutral
 
 inputFromButton :: GameState -> InputButton -> IO GameState
-inputFromButton gs@MkGameState {menuState = Playing} = GC.inputFromButton gs
-inputFromButton gs = MC.inputFromButton gs
+inputFromButton gs@MkGameState {menuState = Playing} inputb= GC.inputFromButton gs inputb
+inputFromButton gs inputb= MC.inputFromButton (gs{inputBuffer = inputb}) inputb
