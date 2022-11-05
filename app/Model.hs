@@ -21,13 +21,13 @@ data GameState = MkGameState {
   time :: !Float,
   settings :: !Settings
   }
-
+  deriving Show
 type Score = Int
 
 type BottomLayer = DM.Map Position BottomLayerContent
 
 data InputButton = InputNeutral | InputUp | InputDown | InputLeft | InputRight | InputSelect | InputBack
-
+  deriving (Show)
 data BottomLayerContent = Wall | SmallDot | PowerDot | Empty
   deriving (Eq, Show)
 {-
