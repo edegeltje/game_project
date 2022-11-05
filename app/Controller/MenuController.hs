@@ -24,24 +24,24 @@ navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToDesktopOption} =
 navigatePauseMenu gs = const $ return gs
 
 eventPauseMenuContinue :: InputButton -> GameState -> IO GameState
-eventPauseMenuContinue inputUp gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
-eventPauseMenuContinue inputDown gs = return (gs {menuState = PauseMenu PauseSettingOption}) 
-eventPauseMenuContinue inputSelect gs = return (gs {menuState = Playing})
+eventPauseMenuContinue InputUp gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
+eventPauseMenuContinue InputDown gs = return (gs {menuState = PauseMenu PauseSettingOption}) 
+eventPauseMenuContinue InputSelect gs = return (gs {menuState = Playing})
 
 eventPauseMenuSetting :: InputButton -> GameState -> IO GameState
-eventPauseMenuSetting inputUp gs = return (gs {menuState = PauseMenu ContinueOption})
-eventPauseMenuSetting inputDown gs = return (gs {menuState = PauseMenu ExitToStartOption})
-eventPauseMenuSetting inputSelect gs = return (gs {menuState = SettingMenu VolumeOption})
+eventPauseMenuSetting InputUp gs = return (gs {menuState = PauseMenu ContinueOption})
+eventPauseMenuSetting InputDown gs = return (gs {menuState = PauseMenu ExitToStartOption})
+eventPauseMenuSetting InputSelect gs = return (gs {menuState = SettingMenu VolumeOption})
 
 eventPauseMenuStart :: InputButton -> GameState -> IO GameState
-eventPauseMenuStart inputUp gs = return (gs {menuState = PauseMenu PauseSettingOption})
-eventPauseMenuStart inputDown gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
-eventPauseMenuStart inputSelect gs = return (gs {menuState = StartMenu PlayOption})
+eventPauseMenuStart InputUp gs = return (gs {menuState = PauseMenu PauseSettingOption})
+eventPauseMenuStart InputDown gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
+eventPauseMenuStart InputSelect gs = return (gs {menuState = StartMenu PlayOption})
 
 eventPauseMenuDesktop :: InputButton -> GameState -> IO GameState
-eventPauseMenuDesktop inputUp gs = return (gs {menuState = PauseMenu ExitToStartOption})
-eventPauseMenuDesktop inputDown gs = return (gs {menuState = PauseMenu ContinueOption})
-eventPauseMenuDesktop inputSelect gs = exitSuccess
+eventPauseMenuDesktop InputUp gs = return (gs {menuState = PauseMenu ExitToStartOption})
+eventPauseMenuDesktop InputDown gs = return (gs {menuState = PauseMenu ContinueOption})
+eventPauseMenuDesktop InputSelect gs = exitSuccess
 
 
 navigateStartMenu :: GameState -> InputButton -> IO GameState
@@ -54,19 +54,19 @@ navigateStartMenu gs@MkGameState {menuState = StartMenu ExitOption} =
 navigateStartMenu gs = const $ return gs
 
 eventStartMenuPlay :: InputButton -> GameState -> IO GameState
-eventStartMenuPlay inputUp gs = return (gs {menuState = StartMenu ExitOption})
-eventStartMenuPlay inputDown gs = return (gs {menuState = StartMenu StartSettingOption})
-eventStartMenuPlay inputSelect gs = return (gs {menuState = Playing})
+eventStartMenuPlay InputUp gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuPlay InputDown gs = return (gs {menuState = StartMenu StartSettingOption})
+eventStartMenuPlay InputSelect gs = return (gs {menuState = Playing})
 
 eventStartMenuSetting :: InputButton -> GameState -> IO GameState
-eventStartMenuSetting inputUp gs = return (gs {menuState = StartMenu PlayOption})
-eventStartMenuSetting inputDown gs = return (gs {menuState = StartMenu ExitOption})
-eventStartMenuSetting inputSelect gs = return (gs {menuState = SettingMenu VolumeOption})
+eventStartMenuSetting InputUp gs = return (gs {menuState = StartMenu PlayOption})
+eventStartMenuSetting InputDown gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuSetting InputSelect gs = return (gs {menuState = SettingMenu VolumeOption})
 
 eventStartMenuExit :: InputButton -> GameState -> IO GameState
-eventStartMenuExit inputUp gs = return (gs {menuState = StartMenu StartSettingOption})
-eventStartMenuExit inputDown gs = return (gs {menuState = StartMenu PlayOption}) 
-eventStartMenuExit inputSelect gs = exitSuccess
+eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu StartSettingOption})
+eventStartMenuExit InputDown gs = return (gs {menuState = StartMenu PlayOption}) 
+eventStartMenuExit InputSelect gs = exitSuccess
 
 
 navigateSettingMenu :: GameState -> InputButton -> IO GameState
@@ -77,29 +77,29 @@ navigateSettingMenu gs@MkGameState {menuState = SettingMenu SpeedOption} =
 navigateSettingMenu gs = const $ return gs
 
 eventSettingMenuVolume :: InputButton -> GameState -> IO GameState
-eventSettingMenuVolume inputUp gs    = return (gs {menuState = SettingMenu SpeedOption})
-eventSettingMenuVolume inputDown gs  = return (gs {menuState = SettingMenu SpeedOption})
-eventSettingMenuVolume inputLeft gs@MkGameState {settings= currentSetting@MkSettings{volume = 0}} 
+eventSettingMenuVolume InputUp gs    = return (gs {menuState = SettingMenu SpeedOption})
+eventSettingMenuVolume InputDown gs  = return (gs {menuState = SettingMenu SpeedOption})
+eventSettingMenuVolume InputLeft gs@MkGameState {settings= currentSetting@MkSettings{volume = 0}} 
                                      = return (gs {settings = currentSetting{volume = 0}})
-eventSettingMenuVolume inputLeft gs@MkGameState {settings= currentSetting}   
+eventSettingMenuVolume InputLeft gs@MkGameState {settings= currentSetting}   
                                      = return (gs {settings = currentSetting{volume = currentVolume - 1}})
                                      where currentVolume = volume $ settings gs
-eventSettingMenuVolume inputRight gs@MkGameState {settings= currentSetting@MkSettings{volume = 10}}  
+eventSettingMenuVolume InputRight gs@MkGameState {settings= currentSetting@MkSettings{volume = 10}}  
                                      = return (gs {settings = currentSetting{volume = 10}})
-eventSettingMenuVolume inputRight gs@MkGameState {settings= currentSetting}  
+eventSettingMenuVolume InputRight gs@MkGameState {settings= currentSetting}  
                                      = return (gs {settings = currentSetting{volume = currentVolume + 1}})
                                     where currentVolume = volume $ settings gs
 
 eventSettingMenuSpeed :: InputButton -> GameState -> IO GameState
-eventSettingMenuSpeed inputUp gs = return (gs {menuState = SettingMenu VolumeOption})
-eventSettingMenuSpeed inputDown gs = return (gs {menuState = SettingMenu VolumeOption})
-eventSettingMenuSpeed inputLeft gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 10}}  
+eventSettingMenuSpeed InputUp gs = return (gs {menuState = SettingMenu VolumeOption})
+eventSettingMenuSpeed InputDown gs = return (gs {menuState = SettingMenu VolumeOption})
+eventSettingMenuSpeed InputLeft gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 10}}  
                                      = return (gs {settings = currentSetting{gameSpeed = 10}})
-eventSettingMenuSpeed inputLeft gs@MkGameState {settings= currentSetting} 
+eventSettingMenuSpeed InputLeft gs@MkGameState {settings= currentSetting} 
                                      = return (gs {settings = currentSetting{gameSpeed = currentSpeed - 1}})
                                      where currentSpeed = gameSpeed $ settings gs
-eventSettingMenuSpeed inputRight gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 60}}  
+eventSettingMenuSpeed InputRight gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 60}}  
                                      = return (gs {settings = currentSetting{gameSpeed = 60}})
-eventSettingMenuSpeed inputRight gs@MkGameState {settings= currentSetting}  
+eventSettingMenuSpeed InputRight gs@MkGameState {settings= currentSetting}  
                                     = return (gs {settings = currentSetting{gameSpeed = currentSpeed + 1}})
                                     where currentSpeed = gameSpeed $ settings gs

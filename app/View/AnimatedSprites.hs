@@ -64,9 +64,9 @@ instance Renderable EnemyEntity where
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270
-dirToAngle East  = 180
+dirToAngle East  = 0
 dirToAngle South = 90
-dirToAngle West  = 0
+dirToAngle West  = 180
 
 ghostTop = pictures [
   polygon' [(0,0),
