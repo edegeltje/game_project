@@ -12,7 +12,9 @@ data SettingMenuState = VolumeOption | SpeedOption | SuperMenu
 
 class Eq a => MenuOption a where
   optionsWithNames :: a-> [(a,String)]
+  options :: a -> [a]
   menuName :: a -> String
+  options = map fst . optionsWithNames
 
 instance MenuOption PauseMenuState where
   optionsWithNames = const [
@@ -35,9 +37,17 @@ instance MenuOption StartMenuState where
   menuName (StartSettingOption _) = "Settings"
   menuName _ = "Start"
 
+instance MenuOption SettingMenuState where
+  optionsWithNames = const [
+    (VolumeOption, "Volume"),
+    (SpeedOption, "GameSpeed")
+    ]
+  menuName _ = "Settings"
+
 getSettingOptions :: Settings -> [(SettingMenuState, String)]
 getSettingOptions s = [
   (VolumeOption, "Volume  "++ show (volume s)),
   (SpeedOption, "Speed   "++ show (gameSpeed s))
   ]
+
 
