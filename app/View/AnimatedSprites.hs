@@ -45,7 +45,7 @@ pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
 -- voor een goede animate hebben we het volgende nodig:
 
 animateGhost :: EnemyEntity -> Float -> GhostPicture
-animateGhost ghost time = pictures [
+animateGhost ghost@MkEnemy{enemyStatus = Alive} time = pictures [
   color ghostColor ghostTop,
   color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
@@ -58,15 +58,22 @@ animateGhost ghost time = pictures [
     dir = getDirection ghost
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = dirToEye dir
+animateGhost ghost@MkEnemy{enemyStatus = Scared} time = pictures [
+  color (mixColors 0.7 0.3 blue black) ghostTop,
+  color (mixColors 0.7 0.3 blue black) ghostBottom,
+  translate' (0.5, 1)  eye,
+  translate' (1.5, 1) eye] where
+    ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
+    eye = color red (circleSolid' 0.25)
 
 instance Renderable EnemyEntity where
   getSprite = const animateGhost
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270
-dirToAngle East  = 180
+dirToAngle East  = 0
 dirToAngle South = 90
-dirToAngle West  = 0
+dirToAngle West  = 180
 
 ghostTop = pictures [
   polygon' [(0,0),

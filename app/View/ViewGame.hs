@@ -8,6 +8,7 @@ import View.AnimatedSprites
 import View.StaticSprites
 
 import Model
+import Model.Settings (tILESIZE)
 
 drawConstantSprites :: GameState -> IO Picture
 drawConstantSprites MkGameState {
@@ -20,7 +21,8 @@ drawConstantSprites MkGameState {
 
 view :: FruitSprites -> GameState -> Picture
 view fs gs = pictures [drawBottomLayer $ maze gs,
-  renderEntities fs (entities gs) (time gs)
+  renderEntities fs (entities gs) (time gs),
+  translate' (tILESIZE, tILESIZE*4) (scale 0.2 0.2 (color white (text (show (score gs)))))
   ]
 
 renderEntities :: FruitSprites -> EntityRecord -> Float -> Picture
