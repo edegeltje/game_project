@@ -4,6 +4,7 @@ import Model
 import Model.Menus
 import Model.Settings
 import System.Exit
+import Controller.JsonInteract
 
 inputFromButton :: GameState -> InputButton -> IO GameState
 inputFromButton gs@MkGameState {menuState = PauseMenu _} = navigatePauseMenu gs
@@ -59,6 +60,8 @@ navigateStartMenu gs@MkGameState {menuState = StartMenu (StartSettingOption Supe
   flip eventStartMenuSetting gs
 navigateStartMenu gs@MkGameState {menuState = StartMenu ExitOption} = 
   flip eventStartMenuExit gs
+navigateStartMenu gs@MkGameState {menuState = StartMenu LoadOption} = 
+  flip eventStartMenuLoad gs
 navigateStartMenu gs@MkGameState {menuState = StartMenu (StartSettingOption _)} =
   navigateSettingMenu gs
 navigateStartMenu gs = const $ return gs
@@ -71,15 +74,25 @@ eventStartMenuPlay _ gs = return gs
 
 eventStartMenuSetting :: InputButton -> GameState -> IO GameState
 eventStartMenuSetting InputUp gs = return (gs {menuState = StartMenu PlayOption})
-eventStartMenuSetting InputDown gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuSetting InputDown gs = return (gs {menuState = StartMenu LoadOption})
 eventStartMenuSetting InputSelect gs = return (gs {menuState = StartMenu (StartSettingOption VolumeOption)})
 eventStartMenuSetting _ gs = return gs
 
+eventStartMenuLoad :: InputButton -> GameState -> IO GameState
+eventStartMenuLoad InputUp gs = return (gs {menuState = StartMenu (StartSettingOption SuperMenu)})
+eventStartMenuLoad InputDown gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuLoad InputLeft gs = return (gs {level = level gs - 1})
+eventStartMenuLoad InputRight gs = return (gs {level = level gs + 1})
+eventStartMenuLoad InputSelect gs = do
+                                    lvl <- loadLevel (level gs)
+                                    return (levelToGameState lvl)
+
 eventStartMenuExit :: InputButton -> GameState -> IO GameState
-eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu (StartSettingOption SuperMenu)})
+eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu LoadOption})
 eventStartMenuExit InputDown gs = return (gs {menuState = StartMenu PlayOption}) 
 eventStartMenuExit InputSelect gs = exitSuccess
 eventStartMenuExit _ gs = return gs
+
 
 navigateSettingMenu :: GameState -> InputButton -> IO GameState
 navigateSettingMenu gs@MkGameState {menuState = StartMenu (StartSettingOption VolumeOption)} =

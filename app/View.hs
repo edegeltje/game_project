@@ -15,9 +15,6 @@ import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
 import System.Random (mkStdGen)
 
-magicNumber :: Int
-magicNumber = 42069
-testRngSeed = mkStdGen magicNumber
 
 animatePacTest :: IO ()
 animatePacTest = animate window black (animatePacman testPlayer)

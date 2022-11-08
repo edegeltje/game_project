@@ -1,10 +1,12 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use gets" #-}
+{-# LANGUAGE DeriveGeneric #-}
 module Model.Entities where
 import Control.Monad.State (get,State, put, runState)
 import System.Random
 import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
+import GHC.Generics
 
 type SmallDotPicture = Picture
 type PowerDotPicture = Picture
@@ -48,7 +50,7 @@ toFloatTuple (x,y) = (fromIntegral x, fromIntegral y)
 dist :: Position -> Position -> Int
 dist (x1,y1) (x2,y2) = (x1-x2)^2 + (y1-y2)^2
 data Direction = North | West | South | East
-  deriving (Eq, Show, Ord)
+  deriving (Eq, Show, Ord, Generic)
 
 dirToPos :: Direction -> Position
 dirToPos North = (0,1)
@@ -203,9 +205,9 @@ instance Agent PlayerEntity where
 
 
 data EnemyName = Blinky | Inky | Pinky | Clyde
-  deriving (Show,Eq)
+  deriving (Show,Eq,Generic)
 data EnemyStatus = Alive | Dead Float | Scared
-  deriving (Show,Eq)
+  deriving (Show,Eq,Generic)
 data EnemyEntity = MkEnemy {
   enemyPosition :: !Position,
   enemyTarget :: !Position,
@@ -213,7 +215,7 @@ data EnemyEntity = MkEnemy {
   enemyMovementType :: EnemyName,
   enemyStatus :: EnemyStatus,
   enemySpeed :: !Float}
-  deriving Show
+  deriving (Show, Generic)
 
 getEnemyStatus :: State EnemyEntity EnemyStatus
 getEnemyStatus = do
@@ -244,12 +246,12 @@ instance Agent EnemyEntity where
 
 
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
-  deriving Show
+  deriving (Show, Generic)
 data Fruit = MkFruit {
   fruitType :: FruitType,
   fruitPosition :: Position,
   fruitTimer :: Float}
-  deriving Show
+  deriving (Show, Generic)
 
 getFruitType :: State Fruit FruitType
 getFruitType = do

@@ -44,9 +44,12 @@ pauseMenuPicture MkGameState {menuState = PauseMenu pauseOption} = makeMenu paus
 pauseMenuPicture _ = blank
 
 startMenuPicture :: GameState -> Picture
-startMenuPicture MkGameState {menuState = StartMenu sm@(StartSettingOption SuperMenu)} = 
-  makeMenu sm
+startMenuPicture gs@MkGameState {menuState = StartMenu sm@(StartSettingOption SuperMenu)} = 
+  showLevel gs $ makeMenu sm
 startMenuPicture gs@MkGameState {menuState = StartMenu (StartSettingOption smState)} = 
   makeSettingMenu (settings gs) smState
-startMenuPicture MkGameState {menuState = StartMenu startOption} = makeMenu startOption
+startMenuPicture gs@MkGameState {menuState = StartMenu startOption} = showLevel gs $ makeMenu startOption
 startMenuPicture _ = blank
+
+showLevel :: GameState -> Picture -> Picture
+showLevel gs p = pictures [p, color black $ translate' (32, -10) $ scale 0.5 0.5 $ text $ show $ level gs]

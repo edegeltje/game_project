@@ -35,6 +35,7 @@ executable game-project
                     , random
                     , aeson
                     , mtl
+                    , bytestring
     other-modules:    Model
                     , Model.Entities
                     , Model.Menus
