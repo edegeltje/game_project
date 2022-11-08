@@ -26,7 +26,7 @@ view fs gs = pictures [drawBottomLayer $ maze gs,
   ]
 
 renderEntities :: FruitSprites -> EntityRecord -> Float -> Picture
-renderEntities fs (MkEntityRecord player enemies fruits) t = pictures layerlist
+renderEntities fs (MkEntityRecord player enemies fruits _) t = pictures layerlist
     where
       layerlist = [
         renderRenderableList fs t fruits,
@@ -37,7 +37,7 @@ renderEntities fs (MkEntityRecord player enemies fruits) t = pictures layerlist
 renderRenderable :: Renderable a => FruitSprites -> Float -> a -> Picture
 renderRenderable fs t thing = translate' (toFloatTuple spritePosition) sprite where
   sprite = getSprite fs thing t
-  spritePosition = getPosition thing
+  spritePosition = position thing
   spriteCoords = toFloatTuple spritePosition
 
 renderRenderableList :: Renderable a => FruitSprites -> Float -> [a] -> Picture

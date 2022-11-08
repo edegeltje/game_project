@@ -45,7 +45,8 @@ testGameState = MkGameState
   (MkEntityRecord 
     testPlayer
     []
-    []) 
+    []
+    Chase)
   InputNeutral 
   0
   (MkSettings 0 0)
@@ -65,27 +66,34 @@ content = map contentCalc tuples
 testMaze = DM.fromList $ zip tuples content :: BottomLayer
 
 testEnemies = [
-  MkEnemy (2,1) North Inky Alive,
-  MkEnemy (2,3) East Pinky Alive,
-  MkEnemy (4,1) West Blinky Alive,
-  MkEnemy (4,3) South Clyde Alive
+  MkEnemy (2,1) (0,0) North Inky Alive,
+  MkEnemy (2,3) (0,0) East Pinky Alive,
+  MkEnemy (4,1) (0,0) West Blinky Alive,
+  MkEnemy (4,3) (0,0) South Clyde Alive
   ]
 
 testFruits = [
-  MkFruit Cherry     (7,1),
-  MkFruit Bell       (7,3),
-  MkFruit Apple      (9,1),
-  MkFruit Galaxian   (9,3),
-  MkFruit Key        (11,1),
-  MkFruit Melon      (11,3),
-  MkFruit Orange     (13,1),
-  MkFruit Strawberry (13,3)]
+  MkFruit Cherry     (7,1)  60,
+  MkFruit Bell       (7,3)  60,
+  MkFruit Apple      (9,1)  60,
+  MkFruit Galaxian   (9,3)  60,
+  MkFruit Key        (11,1) 60,
+  MkFruit Melon      (11,3) 60,
+  MkFruit Orange     (13,1) 60,
+  MkFruit Strawberry (13,3) 60]
+
+testPlayer' :: PlayerEntity
 testPlayer' = MkPlayer (15,1) West Weak
 
-testEntities = MkEntityRecord testPlayer' testEnemies testFruits
+testEntities :: EntityRecord
+testEntities = MkEntityRecord testPlayer' testEnemies testFruits Chase
+
+testGameState' :: GameState
 testGameState' = 
   MkGameState
     Playing testMaze 1 2 testEntities InputNeutral 0 (MkSettings 1 1)
+
+calcGameState :: Float -> GameState
 calcGameState t = MkGameState
     Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
 

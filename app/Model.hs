@@ -3,6 +3,8 @@ module Model where
 import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import qualified Data.Map as DM
+import Control.Monad.State.Lazy
+import System.Random
 
 import Model.Entities (EntityRecord (enemies, fruits), Position, EnemyEntity, Fruit)
 import Model.Menus (MenuState)
@@ -23,6 +25,62 @@ data GameState = MkGameState {
   }
   deriving Show
 type Score = Int
+
+forEntities :: State EntityRecord a -> State GameState a
+
+forEntities action = do
+  entities <- getEntities
+  let result = runState action entities
+  putEntities $ snd result
+  return $ fst result 
+
+getSettings :: State GameState Settings
+getSettings = do
+  settings <$> get
+
+getGameSpeed :: State GameState Float
+getGameSpeed = do
+  gameSpeed <$> getSettings
+
+
+getInputBuffer :: State GameState InputButton
+getInputBuffer = do
+  inputBuffer <$> get
+getMaze :: State GameState BottomLayer
+getMaze = do
+  maze <$> get
+
+putMaze :: BottomLayer -> State GameState ()
+putMaze m = do
+  gs <- get
+  put gs {maze=m}
+
+getEntities :: State GameState EntityRecord
+getEntities = do
+  entities <$> get
+
+putEntities :: EntityRecord -> State GameState ()
+putEntities es = do
+  gs <- get
+  put gs {entities = es}
+
+getScore :: State GameState Score
+getScore = do
+  score <$> get
+putScore :: Score -> State GameState ()
+putScore s = do
+  gs <- get
+  put gs {score = s}
+
+
+
+getTime :: State GameState Float
+getTime = do
+  time <$> get
+putTime :: Float -> State GameState ()
+putTime t = do
+  gs <- get
+  put gs {time = t}
 
 type BottomLayer = DM.Map Position BottomLayerContent
 

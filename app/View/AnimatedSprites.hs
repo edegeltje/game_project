@@ -31,7 +31,7 @@ instance Renderable PlayerEntity where
 animatePacman :: PlayerEntity -> Float -> PacmanPicture
 
 animatePacman player = rotate (dirToAngle dir) . pacmanOpenMouth where
-  dir = getDirection player
+  dir = direction player
 
 openingtime = 1
 
@@ -45,7 +45,15 @@ pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
 -- voor een goede animate hebben we het volgende nodig:
 
 animateGhost :: EnemyEntity -> Float -> GhostPicture
-animateGhost ghost@MkEnemy{enemyStatus = Alive} time = pictures [
+animateGhost ghost@MkEnemy{enemyStatus = Scared} time = pictures [
+  color (mixColors 0.7 0.3 blue black) ghostTop,
+  color (mixColors 0.7 0.3 blue black) ghostBottom,
+  translate' (0.5, 1)  eye,
+  translate' (1.5, 1) eye] where
+    ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
+    eye = color red (circleSolid' 0.25)
+
+animateGhost ghost time = pictures [
   color ghostColor ghostTop,
   color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
@@ -55,16 +63,9 @@ animateGhost ghost@MkEnemy{enemyStatus = Alive} time = pictures [
       Inky   -> blue
       Pinky  -> rose
       Clyde  -> orange
-    dir = getDirection ghost
+    dir = direction ghost
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = dirToEye dir
-animateGhost ghost@MkEnemy{enemyStatus = Scared} time = pictures [
-  color (mixColors 0.7 0.3 blue black) ghostTop,
-  color (mixColors 0.7 0.3 blue black) ghostBottom,
-  translate' (0.5, 1)  eye,
-  translate' (1.5, 1) eye] where
-    ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
-    eye = color red (circleSolid' 0.25)
 
 instance Renderable EnemyEntity where
   getSprite = const animateGhost
@@ -90,12 +91,9 @@ ghostBottom2 = pictures [
   translate' (0.5,0) (arcSolid' 180 0 0.5),
   translate' (1.5, 0) (arcSolid' 180 0 0.5)]
 
-dirToCoords :: Direction -> (Float, Float) -- not quite a position 
+dirToCoords :: Direction -> Point -- not quite a position 
 -- (points are different from vectors)
-dirToCoords North = (0,1)
-dirToCoords East  = (1,0)
-dirToCoords South = (0,-1)
-dirToCoords West  = (-1,0)
+dirToCoords = toFloatTuple . dirToPos
 
 irisOffset :: Float
 irisOffset = 0.2
@@ -112,6 +110,7 @@ dirToEye dir = translate' northCorrection $ pictures [
       northCorrection = if dir == North then (0,0.4) else (0,0)
 
 testGhost = MkEnemy
+  (0,0)
   (0,0)
   South
   Clyde

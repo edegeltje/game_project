@@ -1,5 +1,9 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use gets" #-}
 module Model.Entities where
+import Control.Monad.State (get,State, put, runState)
 import Graphics.Gloss
+import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 
 type SmallDotPicture = Picture
 type PowerDotPicture = Picture
@@ -27,30 +31,117 @@ data FruitSprites = MkFSprites{
 
 type Position = (Int,Int)
 
+addPos :: Position -> Position -> Position
+addPos (x1,y1) (x2,y2) = (x1+x2,y1+y2)
+
+intTimes :: Int -> Position -> Position
+intTimes a (x,y) = (a*x,a*y)
+
+
+
+floatTimes :: Float -> Position -> Point
+floatTimes a pos = a A.* (toFloatTuple pos)
+
 toFloatTuple :: Position -> (Float,Float)
 toFloatTuple (x,y) = (fromIntegral x, fromIntegral y)
 
-data Direction = North | South | East | West 
-  deriving (Eq, Show)
+dist :: Position -> Position -> Int
+dist (x1,y1) (x2,y2) = (x1-x2)^2 + (y1-y2)^2
+data Direction = North | West | South | East
+  deriving (Eq, Show, Ord)
+
+dirToPos :: Direction -> Position
+dirToPos North = (0,1)
+dirToPos South = (0,-1)
+dirToPos East = (1,0)
+dirToPos West = (-1,0)
 
 class Positioned a where
-  getPosition :: a -> Position
+  position :: a -> Position
 
 class Positioned a => Renderable a where
   getSprite ::  FruitSprites -> a -> Float -> Picture
 
+data GhostMovementPattern = Scatter | Chase
+  deriving Show
 data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,
   enemies :: [EnemyEntity],
-  fruits :: [Fruit]}
+  fruits :: [Fruit],
+  enemyPattern :: GhostMovementPattern}
   deriving Show
+
+getPlayer :: State EntityRecord PlayerEntity
+getPlayer = do
+  player <$> get
+putPlayer :: PlayerEntity -> State EntityRecord ()
+putPlayer p = do 
+  entities <- get
+  put entities {player= p}
+
+getEnemies :: State EntityRecord [EnemyEntity]
+getEnemies = do
+  enemies <$> get
+putEnemies :: [EnemyEntity] -> State EntityRecord () 
+putEnemies es = do
+  entities <- get
+  put entities {enemies = es}
+
+getFruits :: State EntityRecord [Fruit]
+getFruits = do
+  fruits <$> get
+putFruits :: [Fruit] -> State EntityRecord ()
+putFruits fs = do
+  entities <- get
+  put entities {fruits = fs}
+
+forAllEnemies :: State EnemyEntity a -> State EntityRecord [a] -- some lifting functions
+forAllEnemies action = do
+  enemies <- getEnemies
+  let result = map (runState action) enemies
+  let state = map snd result
+  putEnemies state
+  return $ map fst result
+
+forAllFruits :: State Fruit a -> State EntityRecord [a]
+forAllFruits action = do
+  fruits <- getFruits
+  let result = map (runState action) fruits
+  putFruits $ map snd result
+  return $ map fst result
+
+forPlayer :: State PlayerEntity a -> State EntityRecord a 
+forPlayer action = do
+  player <- getPlayer
+  let result = runState action player
+  putPlayer $ snd result
+  return $ fst result
 
 class (Positioned a) => Agent a where
   setPosition :: a -> Position -> a
-  getDirection :: a -> Direction
+  direction :: a -> Direction
   setDirection :: a -> Direction -> a
 
-data PowerState = PoweredUp | Weak
+
+  getPosition :: State a Position
+  getPosition = do
+    position <$> get
+    
+  putPosition :: Position -> State a ()
+  putPosition pos = do
+    a <- get
+    put (setPosition a pos)
+  getDirection :: State a Direction
+  getDirection = do
+    direction <$> get
+  putDirection :: Direction -> State a ()
+  putDirection dir = do
+    a <- get
+    put (setDirection a dir)
+
+
+
+data PowerState = PoweredUp Float | Weak
   deriving Show
 
 data PlayerEntity = MkPlayer {
@@ -59,39 +150,85 @@ data PlayerEntity = MkPlayer {
   powerState :: !PowerState}
   deriving Show
 
+getPowerState :: State PlayerEntity PowerState
+getPowerState = do
+  powerState <$> get
+  
+putPowerState :: PowerState -> State PlayerEntity ()
+putPowerState powers = do
+  p <- get
+  put p {powerState = powers}
+
 instance Positioned PlayerEntity where
-  getPosition = playerPosition
+  position = playerPosition
 
 instance Agent PlayerEntity where
-  setPosition player newPosition = player {playerPosition = newPosition}
-  getDirection = playerMovementDirection
-  setDirection player newDirection = player {playerMovementDirection = newDirection}
+  setPosition p newPosition = p {playerPosition = newPosition}
+  direction = playerMovementDirection
+  setDirection p newDirection = p {playerMovementDirection = newDirection}
 
-data EnemyMovementType = Blinky | Inky | Pinky | Clyde
-  deriving Show
-data EnemyStatus = Alive | Dead | Scared
-  deriving Show
+data EnemyName = Blinky | Inky | Pinky | Clyde
+  deriving (Show,Eq)
+data EnemyStatus = Alive | Dead Float | Scared
+  deriving (Show,Eq)
 data EnemyEntity = MkEnemy {
   enemyPosition :: !Position,
+  enemyTarget :: !Position,
   enemyMovementDirection :: Direction,
-  enemyMovementType :: EnemyMovementType,
+  enemyMovementType :: EnemyName,
   enemyStatus :: EnemyStatus}
   deriving Show
 
+getEnemyStatus :: State EnemyEntity EnemyStatus
+getEnemyStatus = do
+  enemyStatus <$> get
+putEnemyStatus :: EnemyStatus -> State EnemyEntity ()
+putEnemyStatus eSt = do
+  e <- get
+  put e {enemyStatus = eSt }
+
+getEnemyTarget :: State EnemyEntity Position
+getEnemyTarget = do
+  enemyTarget <$> get
+
+putEnemyTarget :: Position -> State EnemyEntity ()
+putEnemyTarget t = do
+  e <- get
+  put e {enemyTarget = t}
+
 instance Positioned EnemyEntity where
-  getPosition = enemyPosition
+  position = enemyPosition
 
 instance Agent EnemyEntity where
   setPosition enemy newPosition = enemy {enemyPosition = newPosition}
-  getDirection = enemyMovementDirection
+  direction = enemyMovementDirection
   setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
 
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
   deriving Show
 data Fruit = MkFruit {
   fruitType :: FruitType,
-  fruitPosition :: Position}
+  fruitPosition :: Position,
+  fruitTimer :: Float}
   deriving Show
 
+getFruitType :: State Fruit FruitType
+getFruitType = do
+  fruitType <$> get
+
+setFruitType :: FruitType -> State Fruit ()
+setFruitType ft = do
+  f <- get
+  put (f {fruitType = ft})
+
+getFruitTimer :: State Fruit Float
+getFruitTimer = do
+  fruitTimer <$> get
+
+putFruitTimer :: Float -> State Fruit ()
+putFruitTimer t = do
+  f <- get
+  put (f {fruitTimer = t})
+
 instance Positioned Fruit where
-  getPosition = fruitPosition
+  position = fruitPosition

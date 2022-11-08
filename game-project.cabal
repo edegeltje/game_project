@@ -34,12 +34,14 @@ executable game-project
                     , gloss
                     , random
                     , aeson
+                    , mtl
     other-modules:    Model
                     , Model.Entities
                     , Model.Menus
                     , Model.Settings
                     , Controller
                     , Controller.GameController
+                    , Controller.GameControllerWState
                     , Controller.JsonInteract
                     , Controller.MenuController
                     , View
