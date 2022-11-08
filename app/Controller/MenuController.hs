@@ -4,6 +4,7 @@ import Model
 import Model.Menus
 import Model.Settings
 import System.Exit
+import Controller.JsonInteract
 
 inputFromButton :: GameState -> InputButton -> IO GameState
 inputFromButton gs@MkGameState {menuState = PauseMenu _} = navigatePauseMenu gs
@@ -82,6 +83,9 @@ eventStartMenuLoad InputUp gs = return (gs {menuState = StartMenu (StartSettingO
 eventStartMenuLoad InputDown gs = return (gs {menuState = StartMenu ExitOption})
 eventStartMenuLoad InputLeft gs = return (gs {level = level gs - 1})
 eventStartMenuLoad InputRight gs = return (gs {level = level gs + 1})
+eventStartMenuLoad InputSelect gs = do
+                                    lvl <- loadLevel (level gs)
+                                    return (levelToGameState lvl)
 
 eventStartMenuExit :: InputButton -> GameState -> IO GameState
 eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu LoadOption})

@@ -123,3 +123,4 @@ arcSolid' a b c = arcSolid a b $ tILESIZE * c
 
 picturesIO :: [IO Picture] -> IO Picture
 picturesIO =  (pictures <$>) . sequence
+

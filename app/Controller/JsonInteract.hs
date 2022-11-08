@@ -12,7 +12,7 @@ import Model.Settings
 import Model.Menus
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
-import View 
+
 
 instance FromJSON Level where
   parseJSON = genericParseJSON defaultOptions
@@ -66,10 +66,16 @@ gameStateToLevel :: GameState -> Level
 gameStateToLevel gs = MkLevel (level gs) (maze gs) (enemies $ entities gs) (fruits $ entities gs)
 
 levelToGameState :: Level -> GameState
-levelToGameState lvl = MkGameState Playing (levelMaze lvl) 0 (levelNumber lvl) (MkEntityRecord testPlayer' (levelEnemies lvl) (levelFruits lvl) Chase) InputNeutral 0 (MkSettings 1 1)
+levelToGameState lvl = MkGameState Playing (levelMaze lvl) 0 (levelNumber lvl) (levelEntities lvl) InputNeutral 0 (MkSettings 1 1)
 
-saveLevel :: IO ()
-saveLevel = B.writeFile "level1.json" (encode (gameStateToLevel testGameState'))
+levelEntities :: Level -> EntityRecord
+levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruits lvl) Chase
+
+standardPlayer :: PlayerEntity
+standardPlayer = MkPlayer (15,1) West Weak
+
+--saveLevel :: IO ()
+--saveLevel = B.writeFile "level1.json" (encode (gameStateToLevel testGameState'))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
