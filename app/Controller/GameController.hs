@@ -115,11 +115,6 @@ updateEntities gs@MkGameState{
     scare enemies = enemies{enemyStatus = Scared}
     currentScore = score gs
 
-
-
-updateEntities gs = (undefined,
-  undefined)
-
 updateEntities gs = (entities gs, score gs)
 
 updateMaze :: GameState -> EntityRecord -> (BottomLayer,Score)

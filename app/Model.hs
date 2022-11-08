@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Model where
 
 import Graphics.Gloss
@@ -9,6 +10,9 @@ import System.Random
 import Model.Entities (EntityRecord (enemies, fruits), Position, EnemyEntity, Fruit)
 import Model.Menus (MenuState)
 import Model.Settings
+import GHC.Generics
+import Data.Aeson
+
 
 foo :: IO ()
 foo = putStrLn "foo function in Model"
@@ -87,7 +91,7 @@ type BottomLayer = DM.Map Position BottomLayerContent
 data InputButton = InputNeutral | InputUp | InputDown | InputLeft | InputRight | InputSelect | InputBack
   deriving (Show)
 data BottomLayerContent = Wall | SmallDot | PowerDot | Empty
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
 {-
 This datastructure to prevent non-accesible states from being represented
 -}
@@ -97,10 +101,10 @@ type BottomLayer' = String
 
 data Level = MkLevel {
   levelNumber :: !Int,
-  levelMaze :: !BottomLayer',
+  levelMaze :: !BottomLayer,
   levelEnemies :: ![EnemyEntity],
   levelFruits :: [Fruit]
-}
+} deriving (Show, Generic)
 -- the type for the levels we store in the json files
 
 tileToPoint :: (Float, Float) -> (Float,Float)

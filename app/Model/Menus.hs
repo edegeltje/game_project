@@ -5,7 +5,7 @@ data MenuState = PauseMenu PauseMenuState | StartMenu StartMenuState | Playing
   deriving (Show)
 data PauseMenuState = ContinueOption | PauseSettingOption SettingMenuState | ExitToStartOption | ExitToDesktopOption
   deriving (Show, Eq)
-data StartMenuState = PlayOption | StartSettingOption SettingMenuState| ExitOption
+data StartMenuState = PlayOption | StartSettingOption SettingMenuState| LoadOption | ExitOption
   deriving (Show, Eq)
 data SettingMenuState = VolumeOption | SpeedOption | SuperMenu
   deriving (Show, Eq)
@@ -31,6 +31,7 @@ instance MenuOption StartMenuState where
   optionsWithNames = const [
     (PlayOption,"Play"),
     (StartSettingOption SuperMenu, "Settings"),
+    (LoadOption, "Load level"),
     (ExitOption, "Exit")
     ]
   menuName (StartSettingOption SuperMenu) = "Start"
