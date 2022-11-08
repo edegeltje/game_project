@@ -2,6 +2,7 @@
 {-# HLINT ignore "Use gets" #-}
 module Model.Entities where
 import Control.Monad.State (get,State, put, runState)
+import System.Random
 import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 
@@ -38,9 +39,8 @@ intTimes :: Int -> Position -> Position
 intTimes a (x,y) = (a*x,a*y)
 
 
-
 floatTimes :: Float -> Position -> Point
-floatTimes a pos = a A.* (toFloatTuple pos)
+floatTimes a pos = a A.* toFloatTuple pos
 
 toFloatTuple :: Position -> (Float,Float)
 toFloatTuple (x,y) = (fromIntegral x, fromIntegral y)
@@ -56,8 +56,39 @@ dirToPos South = (0,-1)
 dirToPos East = (1,0)
 dirToPos West = (-1,0)
 
+oppositeDir :: Direction -> Direction
+oppositeDir dir = case dir of
+  North -> South
+  West -> East
+  South -> North
+  East -> West
+
 class Positioned a where
   position :: a -> Position
+  speed :: a -> Float
+  setSpeed :: a -> Float -> a
+  direction :: a -> Direction
+  setDirection :: a -> Direction -> a
+
+  getDirection :: State a Direction
+  getDirection = do
+    direction <$> get
+  putDirection :: Direction -> State a ()
+  putDirection dir = do
+    a <- get
+    put (setDirection a dir)
+  
+  getSpeed :: State a Float
+  getSpeed = do
+    speed <$> get
+  
+  putSpeed :: Float -> State a ()
+  putSpeed s = do
+    a <- get
+    put (setSpeed a s)
+
+coIncidesWith :: (Positioned a,Positioned b) => a -> b -> Bool
+coIncidesWith a b = position a == position b
 
 class Positioned a => Renderable a where
   getSprite ::  FruitSprites -> a -> Float -> Picture
@@ -75,14 +106,14 @@ getPlayer :: State EntityRecord PlayerEntity
 getPlayer = do
   player <$> get
 putPlayer :: PlayerEntity -> State EntityRecord ()
-putPlayer p = do 
+putPlayer p = do
   entities <- get
   put entities {player= p}
 
 getEnemies :: State EntityRecord [EnemyEntity]
 getEnemies = do
   enemies <$> get
-putEnemies :: [EnemyEntity] -> State EntityRecord () 
+putEnemies :: [EnemyEntity] -> State EntityRecord ()
 putEnemies es = do
   entities <- get
   put entities {enemies = es}
@@ -94,6 +125,14 @@ putFruits :: [Fruit] -> State EntityRecord ()
 putFruits fs = do
   entities <- get
   put entities {fruits = fs}
+
+getGhostPattern :: State EntityRecord GhostMovementPattern
+getGhostPattern = do
+  enemyPattern <$> get
+putGhostMovementPattern :: GhostMovementPattern -> State EntityRecord ()
+putGhostMovementPattern p = do
+  entities <- get
+  put entities {enemyPattern = p }
 
 forAllEnemies :: State EnemyEntity a -> State EntityRecord [a] -- some lifting functions
 forAllEnemies action = do
@@ -110,7 +149,7 @@ forAllFruits action = do
   putFruits $ map snd result
   return $ map fst result
 
-forPlayer :: State PlayerEntity a -> State EntityRecord a 
+forPlayer :: State PlayerEntity a -> State EntityRecord a
 forPlayer action = do
   player <- getPlayer
   let result = runState action player
@@ -119,25 +158,15 @@ forPlayer action = do
 
 class (Positioned a) => Agent a where
   setPosition :: a -> Position -> a
-  direction :: a -> Direction
-  setDirection :: a -> Direction -> a
-
 
   getPosition :: State a Position
   getPosition = do
     position <$> get
-    
+
   putPosition :: Position -> State a ()
   putPosition pos = do
     a <- get
     put (setPosition a pos)
-  getDirection :: State a Direction
-  getDirection = do
-    direction <$> get
-  putDirection :: Direction -> State a ()
-  putDirection dir = do
-    a <- get
-    put (setDirection a dir)
 
 
 
@@ -147,25 +176,31 @@ data PowerState = PoweredUp Float | Weak
 data PlayerEntity = MkPlayer {
   playerPosition :: !Position,
   playerMovementDirection :: !Direction,
-  powerState :: !PowerState}
+  powerState :: !PowerState,
+  playerSpeed :: !Float}
   deriving Show
 
 getPowerState :: State PlayerEntity PowerState
 getPowerState = do
   powerState <$> get
-  
+
 putPowerState :: PowerState -> State PlayerEntity ()
 putPowerState powers = do
   p <- get
   put p {powerState = powers}
 
+
 instance Positioned PlayerEntity where
   position = playerPosition
+  speed = playerSpeed
+  setSpeed player newSpeed = player {playerSpeed = newSpeed}
+  direction = playerMovementDirection
+  setDirection p newDirection = p {playerMovementDirection = newDirection}
+
 
 instance Agent PlayerEntity where
   setPosition p newPosition = p {playerPosition = newPosition}
-  direction = playerMovementDirection
-  setDirection p newDirection = p {playerMovementDirection = newDirection}
+
 
 data EnemyName = Blinky | Inky | Pinky | Clyde
   deriving (Show,Eq)
@@ -174,9 +209,10 @@ data EnemyStatus = Alive | Dead Float | Scared
 data EnemyEntity = MkEnemy {
   enemyPosition :: !Position,
   enemyTarget :: !Position,
-  enemyMovementDirection :: Direction,
+  enemyMovementDirection :: !Direction,
   enemyMovementType :: EnemyName,
-  enemyStatus :: EnemyStatus}
+  enemyStatus :: EnemyStatus,
+  enemySpeed :: !Float}
   deriving Show
 
 getEnemyStatus :: State EnemyEntity EnemyStatus
@@ -198,11 +234,14 @@ putEnemyTarget t = do
 
 instance Positioned EnemyEntity where
   position = enemyPosition
+  speed = enemySpeed
+  setSpeed enemy newSpeed = enemy {enemySpeed = newSpeed}
+  direction = enemyMovementDirection
+  setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
 
 instance Agent EnemyEntity where
   setPosition enemy newPosition = enemy {enemyPosition = newPosition}
-  direction = enemyMovementDirection
-  setDirection enemy newDirection = enemy {enemyMovementDirection = newDirection}
+
 
 data FruitType = Cherry | Strawberry | Orange | Apple | Melon | Galaxian | Bell | Key
   deriving Show
@@ -232,3 +271,7 @@ putFruitTimer t = do
 
 instance Positioned Fruit where
   position = fruitPosition
+  speed = const 0
+  setSpeed = const
+  direction = const East
+  setDirection = const

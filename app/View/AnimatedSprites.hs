@@ -45,19 +45,38 @@ pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
 -- voor een goede animate hebben we het volgende nodig:
 
 animateGhost :: EnemyEntity -> Float -> GhostPicture
-animateGhost ghost@MkEnemy{enemyStatus = Scared} time = pictures [
-  color (mixColors 0.7 0.3 blue black) ghostTop,
-  color (mixColors 0.7 0.3 blue black) ghostBottom,
+animateGhost ghost@MkEnemy{enemyStatus = Dead t} time = pictures [
+  color ghostColor ghostTop,
+  color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
   translate' (1.5, 1) eye] where
+    ghostColor = if t < 5 && mod' t 0.5 < 0.25
+      then case enemyMovementType ghost of
+        Blinky -> red
+        Inky   -> blue
+        Pinky  -> rose
+        Clyde  -> orange
+      else
+        makeColor 0 0 0 0
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = color red (circleSolid' 0.25)
+
+animateGhost ghost@MkEnemy{enemyStatus = Scared} time =
+  pictures [
+    color (mixColors 0.7 0.3 blue black) ghostTop,
+    color (mixColors 0.7 0.3 blue black) ghostBottom,
+    translate' (0.5, 1)  eye,
+    translate' (1.5, 1) eye] where
+      ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
+      eye = color red (circleSolid' 0.25)
 
 animateGhost ghost time = pictures [
   color ghostColor ghostTop,
   color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
-  translate' (1.5, 1) eye] where
+  translate' (1.5, 1) eye,
+  color ghostColor $ translate' (toFloatTuple $ ((-1) `intTimes` position ghost)
+    `addPos` enemyTarget ghost) targetPicture] where
     ghostColor = case enemyMovementType ghost of
       Blinky -> red
       Inky   -> blue
@@ -66,9 +85,10 @@ animateGhost ghost time = pictures [
     dir = direction ghost
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = dirToEye dir
+    targetPicture = circleSolid' 1
 
 instance Renderable EnemyEntity where
-  getSprite = const animateGhost
+  getSprite = const $ (translate' (-1,-1) .) . animateGhost
 
 dirToAngle :: Direction -> Float
 dirToAngle North = 270
@@ -102,18 +122,20 @@ eyeWhiteOffset = 0.1
 
 dirToEye :: Direction -> Picture
 dirToEye dir = translate' northCorrection $ pictures [
-  color white $ 
+  color white $
     translate' (eyeWhiteOffset A.* dirCoords) $ circleSolid' 0.25,
-  color blue $ 
+  color blue $
     translate' (irisOffset A.* dirCoords ) $ circleSolid' 0.1 ] where
       dirCoords = dirToCoords dir
       northCorrection = if dir == North then (0,0.4) else (0,0)
 
+testGhost :: EnemyEntity
 testGhost = MkEnemy
   (0,0)
   (0,0)
   South
   Clyde
   Alive
+  1
 
 renderTestGhost = animate window black $ animateGhost testGhost

@@ -13,6 +13,11 @@ import Controller
 
 import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
+import System.Random (mkStdGen)
+
+magicNumber :: Int
+magicNumber = 42069
+testRngSeed = mkStdGen magicNumber
 
 animatePacTest :: IO ()
 animatePacTest = animate window black (animatePacman testPlayer)
@@ -31,10 +36,12 @@ view fs gs = pictures [VM.view gs
   ]
 
 
+testPlayer :: PlayerEntity
 testPlayer = MkPlayer 
       (0,0) 
       South 
       Weak
+      1
 
 testGameState :: GameState
 testGameState = MkGameState 
@@ -50,6 +57,7 @@ testGameState = MkGameState
   InputNeutral 
   0
   (MkSettings 0 0)
+  testRngSeed
 
 
 tuples = [(x,y) | x<- [-2..20], y <- [-2..20]]
@@ -65,13 +73,15 @@ content = map contentCalc tuples
 
 testMaze = DM.fromList $ zip tuples content :: BottomLayer
 
+testEnemies :: [EnemyEntity]
 testEnemies = [
-  MkEnemy (2,1) (0,0) North Inky Alive,
-  MkEnemy (2,3) (0,0) East Pinky Alive,
-  MkEnemy (4,1) (0,0) West Blinky Alive,
-  MkEnemy (4,3) (0,0) South Clyde Alive
+  MkEnemy (2,1) (0,0) North Inky Alive 1,
+  MkEnemy (2,3) (0,0) East Pinky Alive 1,
+  MkEnemy (4,1) (0,0) West Blinky Alive 1,
+  MkEnemy (4,3) (0,0) South Clyde Alive 1
   ]
 
+testFruits :: [Fruit]
 testFruits = [
   MkFruit Cherry     (7,1)  60,
   MkFruit Bell       (7,3)  60,
@@ -83,19 +93,19 @@ testFruits = [
   MkFruit Strawberry (13,3) 60]
 
 testPlayer' :: PlayerEntity
-testPlayer' = MkPlayer (15,1) West Weak
+testPlayer' = MkPlayer (15,1) West Weak 1
 
 testEntities :: EntityRecord
-testEntities = MkEntityRecord testPlayer' testEnemies testFruits Chase
+testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
 
 testGameState' :: GameState
 testGameState' = 
   MkGameState
-    Playing testMaze 1 2 testEntities InputNeutral 0 (MkSettings 1 1)
+    Playing testMaze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) testRngSeed
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
-    Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1)
+    Playing testMaze 1 2 testEntities InputNeutral t (MkSettings 1 1) testRngSeed
 
 testView = do
   fs <- fruitSpritesIO

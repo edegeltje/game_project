@@ -21,7 +21,8 @@ data GameState = MkGameState {
   entities :: !EntityRecord,
   inputBuffer :: !InputButton,
   time :: !Float,
-  settings :: !Settings
+  settings :: !Settings,
+  rngState :: !StdGen
   }
   deriving Show
 type Score = Int
@@ -81,6 +82,23 @@ putTime :: Float -> State GameState ()
 putTime t = do
   gs <- get
   put gs {time = t}
+
+getRNGState :: State GameState StdGen
+getRNGState = do
+  rngState <$> get
+putRNGState :: StdGen -> State GameState ()
+putRNGState rng = do
+  gs <- get
+  put gs {rngState = rng}
+
+selectRandom :: [a] -> State GameState a
+selectRandom as = do
+  rng <- getRNGState
+  let (roll,newRng) = uniformR (0,length as-1) rng
+  putRNGState newRng
+  return $ as !! roll
+
+
 
 type BottomLayer = DM.Map Position BottomLayerContent
 
