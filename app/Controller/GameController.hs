@@ -110,6 +110,6 @@ killOrBeKilledHalfway = do
     case killingEnemies of
       [] -> return ()
       e:_ -> heDiesHalfway
-    forEntities $ killQualifiedGhosts (`elem` killableEnemies)
+    forEntities $ putQualifiedGhostStatus (ScaredDeadIn 0.5) (`elem` killableEnemies)
   else
     return ()

@@ -88,7 +88,7 @@ standardPlayer = MkPlayer (15,1) West Weak 1
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
-  inputFile <- B.readFile ("level" ++ show i ++ ".json")
+  inputFile <- B.readFile ("levels/level" ++ show i ++ ".json")
   let parsedFile = decode inputFile
   return (fromJust parsedFile)
 

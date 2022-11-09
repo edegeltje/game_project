@@ -81,7 +81,7 @@ checkPlayerDeathTimer :: State GameState ()
 checkPlayerDeathTimer = do
   player <- forEntities getPlayer
   case powerState player of
-    DeadIn x | x < 0 -> do 
+    DeadIn x | x < 0 -> do
       addScore (-1000)
       forEntities $ forPlayer $ putPowerState Weak
     _ -> return ()

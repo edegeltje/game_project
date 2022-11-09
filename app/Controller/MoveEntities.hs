@@ -110,11 +110,15 @@ killOrBeKilled = do
       forEntities $ killQualifiedGhosts (\e -> p `coIncidesWith` e && enemyStatus e == Scared)
       return False -- pacmanDies = false
 
-killQualifiedGhosts :: (EnemyEntity -> Bool) -> State EntityRecord ()
-killQualifiedGhosts q = do
+putQualifiedGhostStatus :: EnemyStatus -> (EnemyEntity -> Bool) -> State EntityRecord ()
+putQualifiedGhostStatus estatus q = do
   enemies <- getEnemies
   forAllEnemies (do
-    e<- get
-    if q e then putEnemyStatus (Dead 60) else return ())
+    e <- get
+    if q e then putEnemyStatus estatus else return ())
   return ()
+
+
+killQualifiedGhosts :: (EnemyEntity -> Bool) -> State EntityRecord ()
+killQualifiedGhosts q = putQualifiedGhostStatus (Dead 60) q
 
