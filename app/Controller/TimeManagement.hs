@@ -25,10 +25,9 @@ updatePlayerTime :: Float -> State PlayerEntity ()
 updatePlayerTime realdt = do
   ps <- getPowerState
   putPowerState (case ps of
-    PoweredUp t
-      |t - realdt > 0 -> PoweredUp (t-realdt)
-      |otherwise -> Weak
-    Weak -> Weak)
+    PoweredUp t -> PoweredUp (t-realdt)
+    Weak -> Weak
+    DeadIn t -> DeadIn (t-realdt))
 
 updateEnemyTime :: Float -> State EnemyEntity ()
 updateEnemyTime realdt = do
@@ -37,7 +36,8 @@ updateEnemyTime realdt = do
     Dead t | t-realdt > 0 -> Dead (t-realdt)
            | otherwise -> Alive
     Scared -> Scared
-    Alive -> Alive)
+    Alive -> Alive
+    ScaredDeadIn t -> ScaredDeadIn (t-realdt))
 
 updateFruitTime :: Float -> State Fruit ()
 updateFruitTime realdt = do
@@ -52,6 +52,10 @@ yeetBadFruits = do
   fruits <- getFruits
   putFruits [f | f<- fruits, goodFruit f]
 
+checkTimers :: State GameState ()
+checkTimers = do
+  forEntities checkPowerStateTimer
+  forEntities checkEnemyPatternTimer
 
 checkEnemyPatternTimer :: State EntityRecord ()
 checkEnemyPatternTimer = do
@@ -59,11 +63,51 @@ checkEnemyPatternTimer = do
 
 checkPowerStateTimer :: State EntityRecord Bool
 checkPowerStateTimer = do
-  pstate <- forPlayer getPowerState  
+  pstate <- forPlayer getPowerState
   case pstate of
     PoweredUp x | x < 0 -> do
+      forPlayer $ putPowerState Weak
       return True
     _ -> return False
+
+checkZombieGhosts :: State GameState ()
+checkZombieGhosts = do
+  enemies <- forEntities getEnemies
+  newEnemies <- mapM checkZombieGhost enemies
+  forEntities $ putEnemies newEnemies
+  return ()
+
+checkPlayerDeathTimer :: State GameState ()
+checkPlayerDeathTimer = do
+  player <- forEntities getPlayer
+  case powerState player of
+    DeadIn x | x < 0 -> do 
+      addScore (-1000)
+      forEntities $ forPlayer $ putPowerState Weak
+    _ -> return ()
+    
+
+hasBeenKilled :: EnemyEntity -> Bool
+hasBeenKilled e = case enemyStatus e of
+  Alive -> True
+  Dead x -> True
+  Scared -> False
+  ScaredDeadIn x -> False
+
+checkZombieGhost :: EnemyEntity -> State GameState EnemyEntity
+checkZombieGhost e = do
+  case enemyStatus e of
+    Alive -> return e
+    Dead x -> return e
+    Scared -> return e
+    ScaredDeadIn x | x < 0 -> do
+      enemies <- forEntities getEnemies
+      let killedEnemies = [enemy | enemy <- enemies, hasBeenKilled enemy]
+      addScore $ 200 * 2 ^length killedEnemies
+      return e {enemyStatus = Dead 60}
+    _ -> return e
+
+
 
 unScare :: State EntityRecord ()
 unScare = do
@@ -72,11 +116,6 @@ unScare = do
     case estatus of
       Scared -> putEnemyStatus Alive
       _ -> return ()
-    reverseDirection
+    dir <- getDirection
+    putDirection $ oppositeDir dir
   return ()
-
-reverseDirection :: Agent a => State a ()
-
-reverseDirection = do
-  dir <- getDirection
-  putDirection $ oppositeDir dir

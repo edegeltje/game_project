@@ -24,7 +24,9 @@ drawConstantSprites MkGameState {
 view :: FruitSprites -> GameState -> Picture
 view fs gs = pictures [drawBottomLayer $ maze gs,
   renderEntities fs (entities gs) (time gs),
-  translate' (tILESIZE, tILESIZE*4) (scale 0.2 0.2 (color white (text (show (score gs)))))
+  translate' (8, 32) $ scale 0.2 0.2 $ color white $ text $ show $ score gs,
+  translate' (8,-16) $ scale 0.2 0.2 $
+    color white $ text $ show $ powerState $ player $ entities gs
   ]
 
 renderEntities :: FruitSprites -> EntityRecord -> Float -> Picture

@@ -7,12 +7,6 @@ import Control.Monad.State.Lazy
 import qualified Data.Map as DM
 import View.StaticSprites
 
-addScore :: Score -> State GameState ()
-addScore ds= do
-  score <- getScore
-  putScore (score+ds)
-
-
 dirPossible :: BottomLayer -> Position -> Direction -> Bool
 dirPossible maze pos dir = getPositionContent (calcNewPosition pos dir) maze /= Wall
 
@@ -79,7 +73,7 @@ eatFruit = do
 
 powerUpPacman :: State EntityRecord ()
 powerUpPacman = do
-  forPlayer $ putPowerState (PoweredUp 10)
+  forPlayer $ putPowerState (PoweredUp 30)
 
 scareGhosts :: State EntityRecord ()
 scareGhosts = () <$ forAllEnemies scareGhost -- ignore the result from the mapping

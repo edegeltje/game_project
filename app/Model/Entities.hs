@@ -172,7 +172,7 @@ class (Positioned a) => Agent a where
 
 
 
-data PowerState = PoweredUp Float | Weak
+data PowerState = PoweredUp Float | Weak | DeadIn Float
   deriving Show
 
 data PlayerEntity = MkPlayer {
@@ -206,7 +206,7 @@ instance Agent PlayerEntity where
 
 data EnemyName = Blinky | Inky | Pinky | Clyde
   deriving (Show,Eq,Generic)
-data EnemyStatus = Alive | Dead Float | Scared
+data EnemyStatus = Alive | Dead Float | Scared | ScaredDeadIn Float
   deriving (Show,Eq,Generic)
 data EnemyEntity = MkEnemy {
   enemyPosition :: !Position,
@@ -215,7 +215,7 @@ data EnemyEntity = MkEnemy {
   enemyMovementType :: EnemyName,
   enemyStatus :: EnemyStatus,
   enemySpeed :: !Float}
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 getEnemyStatus :: State EnemyEntity EnemyStatus
 getEnemyStatus = do
