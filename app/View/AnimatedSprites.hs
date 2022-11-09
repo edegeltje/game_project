@@ -75,7 +75,7 @@ animateGhost ghost time = pictures [
   color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
   translate' (1.5, 1) eye,
-  color ghostColor $ translate' (toFloatTuple $ ((-1) `intTimes` position ghost)
+  color ghostColor $ translate' (toFloatTuple $ ((-1) `intTimes` position ghost) `addPos` (1,1)
     `addPos` enemyTarget ghost) targetPicture] where
     ghostColor = case enemyMovementType ghost of
       Blinky -> red

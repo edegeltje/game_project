@@ -56,24 +56,26 @@ statefulStep :: Float -> State GameState ()
 statefulStep t = do
   previoustime <- getTime
   newtime <- updateTime t -- increase all timers, return the new time
-  checkTimers
   if floor newtime /= floor previoustime -- when the seconds change, 
     then simulationStep                   -- take an iterationstep.
     else return ()
 
 
+
 simulationStep :: State GameState ()
 simulationStep = do
   movePlayer
-  collectCollectibles
   moveEnemies
+  poweredUp <- collectCollectibles
   hedies <- killOrBeKilled
-  if hedies then heDies else heLives
+  if hedies then heDies 
+    else return ()
+  heLives poweredUp
 
-heLives :: State GameState ()
-heLives = do
+heLives :: Bool -> State GameState ()
+heLives poweredUp= do
   updatePacDirection
-  setEnemyDirections
+  setEnemyDirections poweredUp
   return ()
 
 heDies :: State GameState ()

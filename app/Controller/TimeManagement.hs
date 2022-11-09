@@ -52,21 +52,18 @@ yeetBadFruits = do
   fruits <- getFruits
   putFruits [f | f<- fruits, goodFruit f]
 
-checkTimers :: State GameState ()
-checkTimers = do
-  forEntities checkPowerStateTimer
-  forEntities checkEnemyPatternTimer
 
 checkEnemyPatternTimer :: State EntityRecord ()
 checkEnemyPatternTimer = do
   return ()
 
-checkPowerStateTimer :: State EntityRecord ()
+checkPowerStateTimer :: State EntityRecord Bool
 checkPowerStateTimer = do
   pstate <- forPlayer getPowerState  
   case pstate of
-    PoweredUp x | x < 0 -> unScare
-    _ -> return ()
+    PoweredUp x | x < 0 -> do
+      return True
+    _ -> return False
 
 unScare :: State EntityRecord ()
 unScare = do
@@ -75,6 +72,11 @@ unScare = do
     case estatus of
       Scared -> putEnemyStatus Alive
       _ -> return ()
-    dir <- getDirection
-    putDirection $ oppositeDir dir
+    reverseDirection
   return ()
+
+reverseDirection :: Agent a => State a ()
+
+reverseDirection = do
+  dir <- getDirection
+  putDirection $ oppositeDir dir

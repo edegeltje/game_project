@@ -1,3 +1,4 @@
+{-# HLINT ignore "Use when" "Use void" #-}
 module Controller.EnemyLogic where
 
 import Model
@@ -6,6 +7,8 @@ import Control.Monad.State.Lazy
 import qualified Data.Map as DM
 import Controller.MoveEntities
 import Data.List
+import Controller.TimeManagement (checkPowerStateTimer, unScare)
+import Controller.MoveEntities (scareGhosts)
 
 -- the original pac-man has a bit janky logic. 
 -- see https://www.youtube.com/watch?v=ataGotQ7ir8
@@ -108,15 +111,26 @@ setEnemyDirection e = do
   maze <- getMaze
   case enemyStatus e of
     Scared -> do
-      dir <- selectRandom [ dir|dir <- [North,East,South,West], dirPossible maze (position e) dir]
+      dir <- selectRandom [ pdir|pdir <- [North,East,South,West],
+        dirPossible maze (position e) pdir,
+        pdir /= oppositeDir (direction e) ]
       return $ setDirection e dir
     _ -> return $ setDirection e $ calculateTargetDirection maze e
     
-setEnemyDirections :: State GameState ()
-setEnemyDirections = do
-  enemies <- forEntities getEnemies
-  updatedEnemies <- mapM (setEnemyDirection >=> setEnemyTarget) enemies
-  -- >=> :: Monad m => (a-> m b) -> (b -> m c) (a -> m c)
-  -- basically, (.) but with MOAR MONAD
-  forEntities $ putEnemies updatedEnemies
+setEnemyDirections :: Bool -> State GameState ()
+setEnemyDirections poweredUp = do
+  if poweredUp 
+    then forEntities scareGhosts
+    else return ()
+  powerUpEnds <- forEntities checkPowerStateTimer
+  if powerUpEnds
+    then
+      forEntities unScare
+    else do
+      enemies <- forEntities getEnemies
+      player <- forEntities getPlayer
+      updatedEnemies <- mapM (setEnemyDirection >=> setEnemyTarget) enemies
+      -- >=> :: Monad m => (a-> m b) -> (b -> m c) (a -> m c)
+      -- basically, (.) but with MOAR MONAD
+      forEntities $ putEnemies updatedEnemies
 
