@@ -38,6 +38,7 @@ instance FromJSON EnemyStatus where
 instance FromJSON Direction where
   parseJSON = genericParseJSON defaultOptions
 
+
 instance ToJSON Level where
   toEncoding = genericToEncoding defaultOptions
 
@@ -84,13 +85,17 @@ standardPlayer :: PlayerEntity
 standardPlayer = MkPlayer (15,1) West Weak 1
 
 --saveLevel :: IO ()
---saveLevel = B.writeFile "level1.json" (encode (gameStateToLevel testGameState'))
+--saveLevel = B.writeFile "test.json" (encode (gameStateToLevel testGameState'))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
   inputFile <- B.readFile ("levels/level" ++ show i ++ ".json")
   let parsedFile = decode inputFile
   return (fromJust parsedFile)
+
+-- saveGameState :: GameState -> IO ()
+-- saveGameState savedState = B.writeFile "savedState.json" (encode savedState)
+
 
 
 --applyLevel :: GameState -> Level -> GameState

@@ -28,7 +28,7 @@ data GameState = MkGameState {
   settings :: !Settings,
   rngState :: !StdGen
   }
-  deriving Show
+  deriving (Show, Generic)
 type Score = Int
 
 forEntities :: State EntityRecord a -> State GameState a
@@ -107,7 +107,7 @@ selectRandom as = do
 type BottomLayer = DM.Map Position BottomLayerContent
 
 data InputButton = InputNeutral | InputUp | InputDown | InputLeft | InputRight | InputSelect | InputBack
-  deriving (Show)
+  deriving (Show, Generic)
 data BottomLayerContent = Wall | SmallDot | PowerDot | Empty
   deriving (Eq, Show, Generic)
 {-

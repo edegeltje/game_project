@@ -96,13 +96,13 @@ class Positioned a => Renderable a where
   getSprite ::  FruitSprites -> a -> Float -> Picture
 
 data GhostMovementPattern = Scatter | Chase
-  deriving Show
+  deriving (Show, Generic)
 data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,
   enemies :: [EnemyEntity],
   fruits :: [Fruit],
   enemyPattern :: GhostMovementPattern}
-  deriving Show
+  deriving (Show, Generic)
 
 getPlayer :: State EntityRecord PlayerEntity
 getPlayer = do
@@ -173,14 +173,14 @@ class (Positioned a) => Agent a where
 
 
 data PowerState = PoweredUp Float | Weak
-  deriving Show
+  deriving (Show, Generic)
 
 data PlayerEntity = MkPlayer {
   playerPosition :: !Position,
   playerMovementDirection :: !Direction,
   powerState :: !PowerState,
   playerSpeed :: !Float}
-  deriving Show
+  deriving (Show, Generic)
 
 getPowerState :: State PlayerEntity PowerState
 getPowerState = do

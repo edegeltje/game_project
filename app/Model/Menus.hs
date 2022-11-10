@@ -1,14 +1,16 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Model.Menus where
 import Model.Settings (Settings (volume, gameSpeed))
+import GHC.Generics
 
 data MenuState = PauseMenu PauseMenuState | StartMenu StartMenuState | Playing
-  deriving (Show)
+  deriving (Show, Generic)
 data PauseMenuState = ContinueOption | PauseSettingOption SettingMenuState | ExitToStartOption | ExitToDesktopOption
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic)
 data StartMenuState = PlayOption | StartSettingOption SettingMenuState| LoadOption | ExitOption
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic)
 data SettingMenuState = VolumeOption | SpeedOption | SuperMenu
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic)
 
 class Eq a => MenuOption a where
   optionsWithNames :: a-> [(a,String)]
