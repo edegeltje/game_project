@@ -31,6 +31,11 @@ data GameState = MkGameState {
   deriving (Show, Generic)
 type Score = Int
 
+addScore :: Score -> State GameState ()
+addScore ds= do
+  score <- getScore
+  putScore (score+ds)
+
 forEntities :: State EntityRecord a -> State GameState a
 
 forEntities action = do

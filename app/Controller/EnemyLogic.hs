@@ -99,7 +99,7 @@ setEnemyTarget e = do
         (Blinky, Scatter) -> calculateBlinkyScatterTarget
         (Blinky, Chase)   -> calculateBlinkyChaseTarget
         (Inky, Scatter)   -> calculateInkyScatterTarget
-        (Inky, Chase)     -> calculateInkyScatterTarget
+        (Inky, Chase)     -> calculateInkyChaseTarget
         (Pinky, Scatter)  -> calculatePinkyScatterTarget
         (Pinky, Chase)    -> calculatePinkyChaseTarget
         (Clyde, Scatter)  -> calculateClydeScatterTarget
@@ -129,7 +129,7 @@ setEnemyDirections poweredUp = do
     else do
       enemies <- forEntities getEnemies
       player <- forEntities getPlayer
-      updatedEnemies <- mapM (setEnemyDirection >=> setEnemyTarget) enemies
+      updatedEnemies <- mapM (setEnemyTarget >=> setEnemyDirection ) enemies
       -- >=> :: Monad m => (a-> m b) -> (b -> m c) (a -> m c)
       -- basically, (.) but with MOAR MONAD
       forEntities $ putEnemies updatedEnemies

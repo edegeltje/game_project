@@ -43,7 +43,6 @@ pacmanOpenMouth time = color yellow (arcSolid' halfAngle (-halfAngle) 1) where
 
 -- shit het wil niet zoals ik wil.
 -- voor een goede animate hebben we het volgende nodig:
-
 animateGhost :: EnemyEntity -> Float -> GhostPicture
 animateGhost ghost@MkEnemy{enemyStatus = Dead t} time = pictures [
   color ghostColor ghostTop,
@@ -69,6 +68,16 @@ animateGhost ghost@MkEnemy{enemyStatus = Scared} time =
     translate' (1.5, 1) eye] where
       ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
       eye = color red (circleSolid' 0.25)
+
+animateGhost ghost@MkEnemy{enemyStatus = ScaredDeadIn t} time =
+  pictures [
+    color (mixColors 0.7 0.3 blue black) ghostTop,
+    color (mixColors 0.7 0.3 blue black) ghostBottom,
+    translate' (0.5, 1)  eye,
+    translate' (1.5, 1) eye] where
+      ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
+      eye = color red (circleSolid' 0.25)
+
 
 animateGhost ghost time = pictures [
   color ghostColor ghostTop,
