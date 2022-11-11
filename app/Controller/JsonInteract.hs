@@ -86,7 +86,7 @@ standardPlayer :: PlayerEntity
 standardPlayer = MkPlayer (15,1) West Weak 1
 
 saveLevel :: IO ()
-saveLevel = B.writeFile "levels/level1.json" (encode (gameStateToLevel level1GameState))
+saveLevel = B.writeFile "levels/level2.json" (encode (gameStateToLevel level2GameState))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do

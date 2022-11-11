@@ -136,10 +136,49 @@ level1Enemies = [
   MkEnemy (20,-16) (0,0) South Clyde Alive 1
   ]
 
+tupleslvl2 = [(x,y) | x<- [-22..22], y <- [-22..22]]
+
+level2Walls :: [(Int, Int)]
+level2Walls =  [(x,y) | x <- [-21..21], y <- [-21..21], abs (x `mod` 5) /= 0, abs (y `mod` 5) /= 0]
+
+printlvl2 :: [String]
+printlvl2 = map show level2Walls
+
+buildLevel2Walls :: [((Int, Int), BottomLayerContent)]
+buildLevel2Walls = map (\(x,y) -> ((x,y),Wall)) level2Walls
+
+addSmallDotslvl2 :: [((Int, Int), BottomLayerContent)] -> [(Int, Int)] -> [((Int, Int), BottomLayerContent)]
+addSmallDotslvl2 content []                                = content
+addSmallDotslvl2 content ((x,y):xs) | (x,y) `elem` map fst content || abs x == 21 || abs y == 21  = addSmallDotslvl2 content xs
+                                    | otherwise                                                   = ((x,y), SmallDot) : addSmallDotslvl2 content xs
+
+level2PowerDots :: [((Int, Int), BottomLayerContent)]
+level2PowerDots = [((-20,21), PowerDot), ((21,20), PowerDot), ((5,-21), PowerDot), ((21,-10), PowerDot), ((-21,-15), PowerDot)]
 
 testMaze' = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
 level1Maze = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+
+level2Maze = DM.fromList $ addEmpty (addSmallDotslvl2 ( level2PowerDots ++ (buildBorder 22) ++ buildLevel2Walls) tupleslvl2) tupleslvl2
+
+level2Fruits :: [Fruit]
+level2Fruits = [
+  MkFruit Cherry     (-21,10)  200,
+  MkFruit Bell       (21,-5)  200,
+  MkFruit Apple      (10,-21)  200,
+  MkFruit Galaxian   (10,21)  200,
+  MkFruit Key        (21,-20) 200,
+  MkFruit Melon      (-5,-21) 200,
+  MkFruit Orange     (21,10) 200,
+  MkFruit Strawberry (20,21) 200]
+
+level2Enemies :: [EnemyEntity]
+level2Enemies = [
+  MkEnemy (-15,21) (0,0) North Inky Alive 1,
+  MkEnemy (15,21) (0,0) East Pinky Alive 1,
+  MkEnemy (-15,-21) (0,0) West Blinky Alive 1,
+  MkEnemy (15,-21) (0,0) South Clyde Alive 1
+  ]
 
 testEnemies :: [EnemyEntity]
 testEnemies = [
@@ -186,11 +225,31 @@ level1View = do
   animateIO window black
     (return . view fs . calcGameStateLevel1) (const $ return ())
 
+level2Player :: PlayerEntity
+level2Player = MkPlayer (0,0) West Weak 1
+
+level2Entities :: EntityRecord
+level2Entities = MkEntityRecord level2Player level2Enemies level2Fruits Scatter
+
+level2GameState :: GameState
+level2GameState = 
+  MkGameState
+    Playing level2Maze 1 2 level2Entities InputNeutral 0 (MkSettings 1 8) testRngSeed
+
+calcGameStateLevel2 :: Float -> GameState
+calcGameStateLevel2 t = MkGameState
+    Playing level2Maze 1 2 level2Entities InputNeutral t (MkSettings 1 8) testRngSeed
+
+level2View = do
+  fs <- fruitSpritesIO
+  animateIO window black
+    (return . view fs . calcGameStateLevel2) (const $ return ())
+
 
 testGameState' :: GameState
 testGameState' = 
   MkGameState
-    Playing testMaze' 1 2 testEntities InputNeutral 0 (MkSettings 1 1) testRngSeed
+    Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) testRngSeed
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
