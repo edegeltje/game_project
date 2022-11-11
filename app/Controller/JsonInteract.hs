@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# HLINT ignore "Use tuple-section" #-}
 module Controller.JsonInteract where
 
@@ -39,6 +39,30 @@ instance FromJSON EnemyStatus where
 instance FromJSON Direction where
   parseJSON = genericParseJSON defaultOptions
 
+instance FromJSON RngConstruct where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON RngStuff where
+  parseJSON = withObject "RngStuff" $ \v -> 
+    let rngconst = v .: "RngConst" in
+      MkRngStuff <$> (hydrateRngStuff . initialiseRngState <$> rngconst) <*> rngconst 
+      -- reminder: <$> :: (a->b) -> f a -> f b
+      --           <*> :: f (a -> b) -> f a -> f b
+      -- the type of the result in this case is Maybe RngStuff
+
+instance FromJson GameState where
+  parseJSON = withObject "GameState" $ \v ->
+    MkGameState <$> 
+      v .: "menuState" <*>
+      v .: "maze" <*>
+      v .: "score" <*>
+      v .: "levelnum" <*>
+      v .: "entities" <*>
+      v .: "inputbuffer" <*>
+      v .: "time" <*>
+      v .: "settings" <*>
+      v .: "rngstuff"
+
 
 instance ToJSON Level where
   toEncoding = genericToEncoding defaultOptions
@@ -64,6 +88,43 @@ instance ToJSON EnemyName where
 instance ToJSON Direction where
   toEncoding = genericToEncoding defaultOptions
 
+instance ToJSON RngConstruct where
+  toEncoding = genericToEncoding defaultOptions
+
+
+instance ToJSON RngStuff where
+  toJSON (MkRngStuff rngstate rngconstruct) = 
+    object ["rngConst" .= rngconstruct]
+
+  toEncoding (MkRngStuff rngstate rngconstruct) = 
+    pairs ("rngConst" .= rngconstruct)
+
+instance ToJSON GameState where
+  toJSON (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff) = 
+    object [
+      "menuState" .= menustate,
+      "maze" .= maze,
+      "score" .= score,
+      "levelnum" .= levelnum,
+      "entities" .= entities,
+      "inputbuffer" .= inputbutton,
+      "time" .= time,
+      "settings" .= settings,
+      "rngstuff" .= rngstuff
+    ]
+  toEncoding (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff) =
+    pairs (
+      "menuState" .= menustate <>
+      "maze" .= maze <>
+      "score" .= score <>
+      "levelnum" .= levelnum <>
+      "entities" .= entities <>
+      "inputbuffer" .= inputbutton <>
+      "time" .= time <>
+      "settings" .= settings <>
+      "rngstuff" .= rngstuff
+    )
+
 gameStateToLevel :: GameState -> Level
 gameStateToLevel gs = MkLevel (level gs) (maze gs) (enemies $ entities gs) (fruits $ entities gs)
 
@@ -77,7 +138,7 @@ levelToGameState lvl = MkGameState
   InputNeutral 
   0 
   (MkSettings 1 1)
-  testRngSeed
+  $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 levelEntities :: Level -> EntityRecord
 levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruits lvl) Chase

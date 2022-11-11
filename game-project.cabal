@@ -54,3 +54,4 @@ executable game-project
                     , View.ViewMenu
     hs-source-dirs:   app
     default-language: Haskell2010
+    default-extensions: OverloadedStrings

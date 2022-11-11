@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use when" "Use void" #-}
 module Controller.MoveEntities where
 

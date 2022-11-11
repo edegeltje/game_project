@@ -52,7 +52,7 @@ testGameState = MkGameState
   InputNeutral 
   0
   (MkSettings 0 0)
-  testRngSeed
+  $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 
 
@@ -137,9 +137,9 @@ level1Enemies = [
   ]
 
 
-testMaze' = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+testMaze' = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
-level1Maze = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+level1Maze = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
 testEnemies :: [EnemyEntity]
 testEnemies = [
@@ -175,11 +175,13 @@ testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
 level1GameState :: GameState
 level1GameState = 
   MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) testRngSeed
+    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) $ 
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 calcGameStateLevel1 :: Float -> GameState
 calcGameStateLevel1 t = MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) testRngSeed
+    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 level1View = do
   fs <- fruitSpritesIO
@@ -190,11 +192,13 @@ level1View = do
 testGameState' :: GameState
 testGameState' = 
   MkGameState
-    Playing testMaze' 1 2 testEntities InputNeutral 0 (MkSettings 1 1) testRngSeed
+    Playing testMaze' 1 2 testEntities InputNeutral 0 (MkSettings 1 1) $ 
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
-    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1) testRngSeed
+    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 testView = do
   fs <- fruitSpritesIO

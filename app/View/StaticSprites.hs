@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use <$>" #-}
 module View.StaticSprites where
 
 import qualified Data.Maybe as DMB
@@ -12,24 +10,15 @@ import Model.Entities
 
 
 fruitSpritesIO = do
-  apple <- appleIO
-  bell <- bellIO
-  cherry <- cherryIO
-  galaxian <- galaxianIO
-  key <- keyIO
-  melon <- melonIO
-  orange <- orangeIO
-  strawberry <- strawberryIO
-  return $ MkFSprites
-    apple
-    bell
-    cherry
-    galaxian
-    key
-    melon
-    orange
-    strawberry
-  
+  MkFSprites <$> 
+    appleIO <*> 
+    bellIO <*> 
+    cherryIO <*> 
+    galaxianIO <*> 
+    keyIO <*> 
+    melonIO <*> 
+    orangeIO <*> 
+    strawberryIO
 
 
 smallDot :: SmallDotPicture
