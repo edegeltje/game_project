@@ -9,7 +9,6 @@ import Model.Settings
 import qualified Data.Map as DM
 import View.AnimatedSprites
 import View.StaticSprites (window, fruitSpritesIO)
-import Controller
 
 import qualified View.ViewGame as VG
 import qualified View.ViewMenu as VM
@@ -74,7 +73,7 @@ testGameState = MkGameState
 buildWall :: (Int, Int) -> (Int, Int) -> [((Int, Int), BottomLayerContent)]
 buildWall (startX, startY) (endX, endY) = [((x,y), Wall) | x <- [startX..endX], y <- [startY..endY]]
 
-tuples = [(x,y) | x<- [-20..20], y <- [-20..20]]
+tuples = [(x,y) | x<- [-25..25], y <- [-25..25]]
 contentCalc :: (Int,Int) -> BottomLayerContent
 contentCalc (-2,_)  = Wall
 contentCalc (20,_) = Wall
@@ -96,12 +95,51 @@ buildBorder :: Int -> [((Int, Int), BottomLayerContent)]
 buildBorder r = concatMap (uncurry buildWall) [((-r, -r), (-r, r)), ((r, -r), (r, r)), ((-r, -r), (r, -r)),((-r, r), (r, r))]
 
 level1Walls :: [((Int, Int), (Int, Int))]
-level1Walls = [((-16, -16), (-12, -12))]
+level1Walls = [((-16, -18), (-12, -12)), ((12, 12), (16, 18)), ((-16, 12), (-12, 18)), ((12, -18), (16, -12)), ((-9, -16), (9, -12)), ((-9, 12), (9, 16)), 
+               ((-16, -23), (16, -18)), ((-16, 18), (16,23)), ((-23, -23), (-19, -18)), ((19, -23), (23,-18)), ((19, 18), (23,23)), ((-23, 18), (-19,23)),
+               ((-1, -8), (1, 8)), ((4,6), (10,8)), ((1, -1), (10, 1)), ((4, -8), (10, -6)), ((12,2), (22,5)), ((12, -5), (22, -2)),
+               ((-10, 6), (-4, 8)), ((-10, -1), (-1, 1)), ((-10, -8), (-4, -6)), ((-22, 2), (-12, 5)), ((-22, -5), (-12, -2)),
+               ((-23, -14), (-19, -9)), ((19, -14), (23,-9)), ((19, 9), (23,14)), ((-23, 9), (-19,14))]
+
+level1SmallDots :: [(Int, Int)]
+level1SmallDots = [(x,24) | x <- [-23..23], not (x == 0)] ++ [(x,-24) | x <- [-23..23], not (x == 0)] ++ [(x,17) | x <- [-11..11], not (x == 0)] ++ [(x,-17) | x <- [-11..11], not (x == 0)]
+                  ++ [(x,y) | x <- [12..22], y <- [-1..1]] ++ [(x,y) | x <- [-22..(-12)], y <- [-1..1]]
+
+level1PowerDots :: [(Int, Int)]
+level1PowerDots = [(-24,24), (0,24), (24,24), (-24,-24), (0,-24), (24,-24), (0,17), (0, -17)]
 
 buildLevel1Walls :: [((Int, Int), BottomLayerContent)]
 buildLevel1Walls = concatMap (uncurry buildWall) level1Walls
 
-testMaze' = DM.fromList $ addEmpty (((0,18),PowerDot) : ((buildBorder 20) ++ buildLevel1Walls)) tuples
+placeLevel1SmallDots :: [((Int, Int), BottomLayerContent)]
+placeLevel1SmallDots = map (\(x,y) -> ((x,y), SmallDot)) level1SmallDots
+
+placeLevel1PowerDots :: [((Int, Int), BottomLayerContent)]
+placeLevel1PowerDots = map (\(x,y) -> ((x,y), PowerDot)) level1PowerDots
+
+level1Fruits :: [Fruit]
+level1Fruits = [
+  MkFruit Cherry     (-2,2)  200,
+  MkFruit Bell       (-2,-2)  200,
+  MkFruit Apple      (2,-2)  200,
+  MkFruit Galaxian   (-24,-14)  200,
+  MkFruit Key        (-24,14) 200,
+  MkFruit Melon      (24,-14) 200,
+  MkFruit Orange     (24,14) 200,
+  MkFruit Strawberry (-18,-7) 200]
+
+level1Enemies :: [EnemyEntity]
+level1Enemies = [
+  MkEnemy (-20,16) (0,0) North Inky Alive 1,
+  MkEnemy (20,16) (0,0) East Pinky Alive 1,
+  MkEnemy (-20,-16) (0,0) West Blinky Alive 1,
+  MkEnemy (20,-16) (0,0) South Clyde Alive 1
+  ]
+
+
+testMaze' = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+
+level1Maze = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
 testEnemies :: [EnemyEntity]
 testEnemies = [
@@ -125,8 +163,29 @@ testFruits = [
 testPlayer' :: PlayerEntity
 testPlayer' = MkPlayer (15,1) West Weak 1
 
+level1Player :: PlayerEntity
+level1Player = MkPlayer (15,1) West Weak 1
+
+level1Entities :: EntityRecord
+level1Entities = MkEntityRecord level1Player level1Enemies level1Fruits Scatter
+
 testEntities :: EntityRecord
 testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
+
+level1GameState :: GameState
+level1GameState = 
+  MkGameState
+    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) testRngSeed
+
+calcGameStateLevel1 :: Float -> GameState
+calcGameStateLevel1 t = MkGameState
+    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) testRngSeed
+
+level1View = do
+  fs <- fruitSpritesIO
+  animateIO window black
+    (return . view fs . calcGameStateLevel1) (const $ return ())
+
 
 testGameState' :: GameState
 testGameState' = 

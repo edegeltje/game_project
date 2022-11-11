@@ -12,6 +12,7 @@ import Model.Settings
 import Model.Menus
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
+import View
 
 
 instance FromJSON Level where
@@ -84,8 +85,8 @@ levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruit
 standardPlayer :: PlayerEntity
 standardPlayer = MkPlayer (15,1) West Weak 1
 
---saveLevel :: IO ()
---saveLevel = B.writeFile "test.json" (encode (gameStateToLevel testGameState'))
+saveLevel :: IO ()
+saveLevel = B.writeFile "levels/level1.json" (encode (gameStateToLevel level1GameState))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
