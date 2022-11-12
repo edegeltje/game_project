@@ -72,12 +72,23 @@ simulationStep :: State GameState ()
 simulationStep = do
   movePlayer
   moveEnemies
-  poweredUp <- collectCollectibles
-  hedies <- killOrBeKilled
-  if hedies then heDies
-    else return ()
-  heLives poweredUp
-  killOrBeKilledHalfway
+  (poweredUp, heWins) <- collectCollectibles
+  if heWins
+    then do
+      gs <- get
+      put gs {animationState = WinScreen 10}
+    else do
+      hedies <- killOrBeKilled
+      if hedies then heDies
+        else
+          return ()
+      score <- getScore
+      if score >= 0
+        then do
+          heLives poweredUp
+          killOrBeKilledHalfway
+        else
+          return ()
 
 
 heLives :: Bool -> State GameState ()
@@ -89,6 +100,13 @@ heLives poweredUp= do
 heDies :: State GameState ()
 heDies = do
   addScore (-1000)
+  score <- getScore
+  if score < 0 
+    then do
+      gs <- get
+      put gs {animationState = GameOver 10}
+    else return ()
+
   --maybe add something else here too? idk
 
 heDiesHalfway :: State GameState ()

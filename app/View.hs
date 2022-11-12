@@ -48,7 +48,8 @@ testGameState = MkGameState
     testPlayer
     []
     []
-    Chase)
+    Scatter
+    [60,60,60])
   InputNeutral 
   0
   (MkSettings 0 0)
@@ -206,10 +207,10 @@ level1Player :: PlayerEntity
 level1Player = MkPlayer (15,1) West Weak 1
 
 level1Entities :: EntityRecord
-level1Entities = MkEntityRecord level1Player level1Enemies level1Fruits Scatter
+level1Entities = MkEntityRecord level1Player level1Enemies level1Fruits Scatter [30,80,30,80,20,4000,4]
 
 testEntities :: EntityRecord
-testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
+testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter []
 
 level1GameState :: GameState
 level1GameState = 
@@ -231,7 +232,7 @@ level2Player :: PlayerEntity
 level2Player = MkPlayer (0,0) West Weak 1
 
 level2Entities :: EntityRecord
-level2Entities = MkEntityRecord level2Player level2Enemies level2Fruits Scatter
+level2Entities = MkEntityRecord level2Player level2Enemies level2Fruits Scatter [30,80,30,80,20,80,20]
 
 level2GameState :: GameState
 level2GameState = 
