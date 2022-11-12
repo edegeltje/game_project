@@ -69,6 +69,9 @@ instance FromJSON PlayerEntity where
 instance FromJSON PowerState where
   parseJSON = genericParseJSON defaultOptions
 
+instance FromJSON AnimationState where
+  parseJSON = genericParseJSON defaultOptions
+
 instance FromJSON RngConstruct where
   parseJSON = genericParseJSON defaultOptions
 
@@ -91,7 +94,8 @@ instance FromJSON GameState where
       v .: "inputbuffer" <*>
       v .: "time" <*>
       v .: "settings" <*>
-      v .: "rngstuff"
+      v .: "rngstuff" <*>
+      v .: "animationstate"
 
 
 instance ToJSON Level where
@@ -148,6 +152,9 @@ instance ToJSON PlayerEntity where
 instance ToJSON PowerState where
   toEncoding = genericToEncoding defaultOptions
 
+instance ToJSON AnimationState where
+  toEncoding = genericToEncoding defaultOptions
+
 instance ToJSON RngConstruct where
   toEncoding = genericToEncoding defaultOptions
 
@@ -160,7 +167,7 @@ instance ToJSON RngStuff where
     pairs ("rngConst" .= rngconstruct)
 
 instance ToJSON GameState where
-  toJSON (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff) = 
+  toJSON (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff animationstate) = 
     object [
       "menuState" .= menustate,
       "maze" .= maze,
@@ -170,9 +177,10 @@ instance ToJSON GameState where
       "inputbuffer" .= inputbutton,
       "time" .= time,
       "settings" .= settings,
+      "animationstate" .= animationstate,
       "rngstuff" .= rngstuff
     ]
-  toEncoding (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff) =
+  toEncoding (MkGameState menustate maze score levelnum entities inputbutton time settings rngstuff animationstate) =
     pairs (
       "menuState" .= menustate <>
       "maze" .= maze <>
@@ -182,7 +190,8 @@ instance ToJSON GameState where
       "inputbuffer" .= inputbutton <>
       "time" .= time <>
       "settings" .= settings <>
-      "rngstuff" .= rngstuff
+      "rngstuff" .= rngstuff <>
+      "animationstate" .= animationstate
     )
 
 gameStateToLevel :: GameState -> Level
@@ -198,7 +207,8 @@ levelToGameState lvl = MkGameState
   InputNeutral 
   0 
   (MkSettings 1 1)
-  $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+  (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+  NoAnimation
 
 levelEntities :: Level -> EntityRecord
 levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruits lvl) Chase

@@ -31,7 +31,7 @@ movePlayer = do
   forEntities (putPlayer newp)
 
 
-collectCollectibles :: State GameState Bool
+collectCollectibles :: State GameState (Bool,Bool)
 collectCollectibles = do
   pos <- forEntities (forPlayer getPosition)
   maze <- getMaze
@@ -48,12 +48,8 @@ collectCollectibles = do
   putMaze $ DM.insert pos Empty maze
   eatFruit
   if not (any (\x -> x== SmallDot || x == PowerDot ) maze)
-    then levelComplete
-    else return ()
-  return powerUp
-
-
-levelComplete = undefined
+    then return (powerUp,True)
+    else return (powerUp,False)
 
 eatFruit :: State GameState ()
 eatFruit = do

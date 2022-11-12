@@ -3,6 +3,7 @@ module View.ViewGame where
 import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import Model.Entities
+import Model.Menus
 
 import View.AnimatedSprites
 import View.StaticSprites
@@ -22,10 +23,15 @@ drawConstantSprites MkGameState {
       ]
 
 view :: FruitSprites -> GameState -> Picture
+view _ MkGameState {animationState = GameOver t} = 
+  color white $ scale 0.5 0.5 $ text "Game Over"
+view _ MkGameState {animationState = WinScreen t} =
+  color white $ scale 0.5 0.5 $ text "Congratulations, You Win!"
 view fs gs = pictures [drawBottomLayer $ maze gs,
   renderEntities fs (entities gs) (time gs),
-  translate' (8, 32) $ scale 0.2 0.2 $ color white $ text $ show $ score gs,
-  translate' (8,-16) $ scale 0.2 0.2 $
+  translate' (8, 32) $ translate' (-20,0) $ scale 0.2 0.2 $ 
+  color white $ text $ show $ score gs,
+  translate' (8,-16) $ translate' (-20,0) $ scale 0.2 0.2 $
     color white $ text $ show $ powerState $ player $ entities gs
   ]
 

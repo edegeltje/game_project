@@ -52,7 +52,8 @@ testGameState = MkGameState
   InputNeutral 
   0
   (MkSettings 0 0)
-  $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+  (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+  NoAnimation
 
 
 
@@ -214,13 +215,15 @@ testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
 level1GameState :: GameState
 level1GameState = 
   MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) $ 
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 calcGameStateLevel1 :: Float -> GameState
 calcGameStateLevel1 t = MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 level1View = do
   fs <- fruitSpritesIO
@@ -236,13 +239,15 @@ level2Entities = MkEntityRecord level2Player level2Enemies level2Fruits Scatter
 level2GameState :: GameState
 level2GameState = 
   MkGameState
-    Playing level2Maze 1 2 level2Entities InputNeutral 0 (MkSettings 1 8) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level2Maze 1 2 level2Entities InputNeutral 0 (MkSettings 1 8)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 calcGameStateLevel2 :: Float -> GameState
 calcGameStateLevel2 t = MkGameState
-    Playing level2Maze 1 2 level2Entities InputNeutral t (MkSettings 1 8) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level2Maze 1 2 level2Entities InputNeutral t (MkSettings 1 8)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 level2View = do
   fs <- fruitSpritesIO
@@ -253,13 +258,15 @@ level2View = do
 testGameState' :: GameState
 testGameState' = 
   MkGameState
-    Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) $ 
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) 
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
-    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 testView = do
   fs <- fruitSpritesIO

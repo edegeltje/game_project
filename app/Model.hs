@@ -9,7 +9,7 @@ import Control.Monad
 import System.Random
 
 import Model.Entities (EntityRecord (enemies, fruits), Position, EnemyEntity, Fruit)
-import Model.Menus (MenuState)
+import Model.Menus (MenuState, AnimationState)
 import Model.Settings
 import GHC.Generics
 import Data.Aeson
@@ -27,7 +27,8 @@ data GameState = MkGameState {
   inputBuffer :: !InputButton,
   time :: !Float,
   settings :: !Settings,
-  rngStuff :: !RngStuff
+  rngStuff :: !RngStuff,
+  animationState :: AnimationState
   }
   deriving (Show, Generic)
 type Score = Int

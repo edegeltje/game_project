@@ -2,6 +2,7 @@ module Controller.TimeManagement where
 
 import Control.Monad.State.Lazy
 import Model
+import Model.Menus
 import Model.Entities
 
 updateTime ::Float -> State GameState Float
@@ -9,9 +10,31 @@ updateTime dt = do
   realtime <- getTime
   speed <- getGameSpeed
   let realdt = dt * speed
-  putTime (realtime + realdt)
-  forEntities (updateEntitiesTime realdt)
-  getTime
+  animationAdvanced <- advanceAnimation realdt
+  if not animationAdvanced 
+    then do
+      putTime (realtime + realdt)
+      forEntities (updateEntitiesTime realdt)
+      getTime
+    else
+      getTime
+
+advanceAnimation :: Float -> State GameState Bool
+advanceAnimation realdt = do
+  gs <- get
+  let aState = animationState gs
+  case aState of
+    NoAnimation -> return False
+    GameOver t -> do
+      put gs {animationState = GameOver (t-realdt)}
+      return True
+    WinScreen t | t-realdt <0 -> do
+      put gs {animationState = NoAnimation, menuState= StartMenu LoadOption}
+      return False
+               | otherwise -> do
+      put gs {animationState = WinScreen (t-realdt)}
+      return True
+
 
 updateEntitiesTime :: Float -> State EntityRecord ()
 updateEntitiesTime realdt = do

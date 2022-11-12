@@ -1,3 +1,4 @@
+
 {-# LANGUAGE DeriveGeneric #-}
 module Model.Menus where
 import Model.Settings (Settings (volume, gameSpeed))
@@ -54,3 +55,5 @@ getSettingOptions s = [
   ]
 
 
+data AnimationState = WinScreen Float | NoAnimation | GameOver Float
+  deriving (Show, Generic)
