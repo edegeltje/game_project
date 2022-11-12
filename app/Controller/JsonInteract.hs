@@ -39,18 +39,48 @@ instance FromJSON EnemyStatus where
 instance FromJSON Direction where
   parseJSON = genericParseJSON defaultOptions
 
+instance FromJSON Settings where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON InputButton where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON EntityRecord where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON MenuState where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON StartMenuState where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON PauseMenuState where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON SettingMenuState where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON GhostMovementPattern where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON PlayerEntity where
+  parseJSON = genericParseJSON defaultOptions
+
+instance FromJSON PowerState where
+  parseJSON = genericParseJSON defaultOptions
+
 instance FromJSON RngConstruct where
   parseJSON = genericParseJSON defaultOptions
 
 instance FromJSON RngStuff where
   parseJSON = withObject "RngStuff" $ \v -> 
     let rngconst = v .: "RngConst" in
-      MkRngStuff <$> (hydrateRngStuff . initialiseRngState <$> rngconst) <*> rngconst 
+      hydrateRngStuff . initialiseRngState <$> rngconst 
       -- reminder: <$> :: (a->b) -> f a -> f b
       --           <*> :: f (a -> b) -> f a -> f b
       -- the type of the result in this case is Maybe RngStuff
 
-instance FromJson GameState where
+instance FromJSON GameState where
   parseJSON = withObject "GameState" $ \v ->
     MkGameState <$> 
       v .: "menuState" <*>
@@ -86,6 +116,36 @@ instance ToJSON EnemyName where
   toEncoding = genericToEncoding defaultOptions
 
 instance ToJSON Direction where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Settings where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON InputButton where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON EntityRecord where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON MenuState where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON StartMenuState where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON PauseMenuState where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON SettingMenuState where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON GhostMovementPattern where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON PlayerEntity where
+  toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON PowerState where
   toEncoding = genericToEncoding defaultOptions
 
 instance ToJSON RngConstruct where
@@ -147,7 +207,7 @@ standardPlayer :: PlayerEntity
 standardPlayer = MkPlayer (15,1) West Weak 1
 
 saveLevel :: IO ()
-saveLevel = B.writeFile "levels/level1.json" (encode (gameStateToLevel level1GameState))
+saveLevel = B.writeFile "levels/level2.json" (encode (gameStateToLevel level2GameState))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
