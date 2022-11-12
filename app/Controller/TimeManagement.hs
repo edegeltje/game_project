@@ -41,8 +41,23 @@ updateEntitiesTime realdt = do
   forPlayer $ updatePlayerTime realdt
   forAllEnemies $ updateEnemyTime realdt
   forAllFruits $ updateFruitTime realdt
+  updatePattern realdt
   yeetBadFruits
   return ()
+
+swapPattern :: GhostMovementPattern -> GhostMovementPattern
+swapPattern gmp = case gmp of
+  Scatter -> Chase
+  Chase -> Scatter
+
+updatePattern :: Float -> State EntityRecord ()
+updatePattern realdt = do
+  er <- get
+  let patternseq = patternSequence er
+  case patternseq of
+    [] -> return ()
+    t:ts -> do
+      put er {patternSequence = t - realdt : ts}
 
 updatePlayerTime :: Float -> State PlayerEntity ()
 updatePlayerTime realdt = do
@@ -82,7 +97,13 @@ checkTimers = do
 
 checkEnemyPatternTimer :: State EntityRecord ()
 checkEnemyPatternTimer = do
-  return ()
+  er <- get
+  let patseq = patternSequence er
+      epat = enemyPattern er
+  case patseq of
+    [] -> return ()
+    t :ts | t <0 -> put er {patternSequence = ts, enemyPattern = swapPattern epat} 
+          | otherwise -> return () 
 
 checkPowerStateTimer :: State EntityRecord Bool
 checkPowerStateTimer = do
@@ -129,7 +150,6 @@ checkZombieGhost e = do
       addScore $ 200 * 2 ^length killedEnemies
       return e {enemyStatus = Dead 60}
     _ -> return e
-
 
 
 unScare :: State EntityRecord ()

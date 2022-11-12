@@ -85,7 +85,7 @@ eventStartMenuLoad InputLeft gs = return (gs {level = level gs - 1})
 eventStartMenuLoad InputRight gs = return (gs {level = level gs + 1})
 eventStartMenuLoad InputSelect gs = do
                                     lvl <- loadLevel (level gs)
-                                    return (levelToGameState lvl)
+                                    return $ applyLevel lvl gs 
 
 eventStartMenuExit :: InputButton -> GameState -> IO GameState
 eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu LoadOption})
@@ -147,12 +147,12 @@ eventSettingMenuSpeed InputBack gs@MkGameState {menuState = PauseMenu _} =
   return $ gs {menuState = PauseMenu (PauseSettingOption SuperMenu)}
 
 
-eventSettingMenuSpeed InputLeft gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 10}}  
+eventSettingMenuSpeed InputLeft gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 5}}  
                                      = return gs
 eventSettingMenuSpeed InputLeft gs@MkGameState {settings= currentSetting} 
                                      = return (gs {settings = currentSetting{gameSpeed = currentSpeed - 1}})
                                      where currentSpeed = gameSpeed $ settings gs
-eventSettingMenuSpeed InputRight gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 60}}  
+eventSettingMenuSpeed InputRight gs@MkGameState {settings= currentSetting@MkSettings{gameSpeed = 30}}  
                                      = return gs
 eventSettingMenuSpeed InputRight gs@MkGameState {settings= currentSetting}  
                                     = return (gs {settings = currentSetting{gameSpeed = currentSpeed + 1}})

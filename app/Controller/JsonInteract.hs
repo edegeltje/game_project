@@ -206,12 +206,27 @@ levelToGameState lvl = MkGameState
   (levelEntities lvl) 
   InputNeutral 
   0 
-  (MkSettings 1 1)
+  (MkSettings 1 4)
   (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
   NoAnimation
 
+applyLevel :: Level -> GameState -> GameState
+applyLevel lvl gs = gs {
+  menuState = Playing, 
+  maze = levelMaze lvl,
+  level = levelNumber lvl, 
+  entities = levelEntities lvl,
+  inputBuffer = InputNeutral,
+  time = 0,
+  settings = MkSettings 1 4,
+  rngStuff = hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0,
+  animationState = NoAnimation}
+
 levelEntities :: Level -> EntityRecord
-levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruits lvl) Chase
+levelEntities lvl = MkEntityRecord standardPlayer (levelEnemies lvl) (levelFruits lvl) Chase chasePattern
+
+chasePattern :: [Float]
+chasePattern = [30,80,30,80,20,4000,4]
 
 standardPlayer :: PlayerEntity
 standardPlayer = MkPlayer (15,1) West Weak 1

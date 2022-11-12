@@ -101,7 +101,8 @@ data EntityRecord = MkEntityRecord {
   player :: PlayerEntity,
   enemies :: [EnemyEntity],
   fruits :: [Fruit],
-  enemyPattern :: GhostMovementPattern}
+  enemyPattern :: GhostMovementPattern,
+  patternSequence :: [Float]}
   deriving (Show, Generic)
 
 getPlayer :: State EntityRecord PlayerEntity

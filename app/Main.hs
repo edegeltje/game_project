@@ -17,5 +17,5 @@ main = do foo
           baz
           fruitSprites <- fruitSpritesIO
           --playIO window black 60 level2GameState (return . view fruitSprites) input step
-          level <- loadLevel 2
+          level <- loadLevel 1
           playIO window black 60 (levelToGameState level) (return . view fruitSprites) input step

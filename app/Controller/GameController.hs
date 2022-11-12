@@ -76,7 +76,8 @@ simulationStep = do
   (poweredUp, heWins) <- collectCollectibles
   if heWins
     then do
-      return ()
+      gs <- get
+      put gs {animationState = WinScreen 10}
     else do
       hedies <- killOrBeKilled
       if hedies then heDies
@@ -104,7 +105,7 @@ heDies = do
   if score < 0 
     then do
       gs <- get
-      put gs {animationState = GameOver 100}
+      put gs {animationState = GameOver 10}
     else return ()
 
   --maybe add something else here too? idk

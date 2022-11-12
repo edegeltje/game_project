@@ -23,10 +23,16 @@ drawConstantSprites MkGameState {
       ]
 
 view :: FruitSprites -> GameState -> Picture
-view _ MkGameState {animationState = GameOver t} = 
-  color white $ scale 0.5 0.5 $ text "Game Over"
-view _ MkGameState {animationState = WinScreen t} =
-  color white $ scale 0.5 0.5 $ text "Congratulations, You Win!"
+view _ gs@MkGameState {animationState = GameOver t} =  
+  color white $ translate' (-30,0) $ scale 0.5 0.5 $ pictures [
+   text "Game Over",
+   translate' (0,-16) $ text $ show $ animationState gs
+  ]
+view _ gs@MkGameState {animationState = WinScreen t} = 
+  color white $ translate' (-30,0) $ scale 0.5 0.5 $ pictures [
+   text "Congratulations, You Win!",
+   translate' (0,-16) $ text $ show $ animationState gs
+  ]
 view fs gs = pictures [drawBottomLayer $ maze gs,
   renderEntities fs (entities gs) (time gs),
   translate' (8, 32) $ translate' (-20,0) $ scale 0.2 0.2 $ 
@@ -36,7 +42,7 @@ view fs gs = pictures [drawBottomLayer $ maze gs,
   ]
 
 renderEntities :: FruitSprites -> EntityRecord -> Float -> Picture
-renderEntities fs (MkEntityRecord player enemies fruits _) t = pictures layerlist
+renderEntities fs (MkEntityRecord player enemies fruits _ _) t = pictures layerlist
     where
       layerlist = [
         renderRenderableList fs t fruits,

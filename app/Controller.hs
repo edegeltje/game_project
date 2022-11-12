@@ -18,7 +18,10 @@ step = flip step'
 step' :: GameState -> Float -> IO GameState
 step' gs@MkGameState {menuState = Playing, animationState = GameOver animationtime} 
   | animationtime < 0 = const $
-    inputFromButton gs {animationState = NoAnimation, menuState = StartMenu LoadOption} InputSelect
+    inputFromButton (gs {animationState = NoAnimation, menuState = StartMenu LoadOption}) InputSelect
+step' gs@MkGameState {menuState = Playing, animationState = WinScreen animationtime}
+  | animationtime < 0 = const $
+    inputFromButton (gs {animationState = NoAnimation, menuState = StartMenu LoadOption}) InputNeutral
 step' gs@MkGameState {menuState = Playing} = flip GC.step gs
 step' gs = const $ return gs
 
