@@ -302,13 +302,15 @@ level3Entities = MkEntityRecord level3Player level3Enemies level3Fruits Scatter
 level3GameState :: GameState
 level3GameState = 
   MkGameState
-    Playing level3Maze 1 2 level3Entities InputNeutral 0 (MkSettings 1 10) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level3Maze 1 2 level3Entities InputNeutral 0 (MkSettings 1 10)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 calcGameStateLevel3 :: Float -> GameState
 calcGameStateLevel3 t = MkGameState
-    Playing level3Maze 1 2 level3Entities InputNeutral t (MkSettings 1 10) $
-      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+    Playing level3Maze 1 2 level3Entities InputNeutral t (MkSettings 1 10)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
 
 level3View = do
   fs <- fruitSpritesIO
@@ -320,12 +322,14 @@ testGameState' :: GameState
 testGameState' = 
   MkGameState
     Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) 
-      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0) 
       NoAnimation
 
 startGameState :: GameState
 startGameState =
-  MkGameState (StartMenu PlayOption) level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 10) $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
+  MkGameState (StartMenu PlayOption) level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 10)
+    (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0) 
+    NoAnimation
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
