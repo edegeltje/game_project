@@ -30,7 +30,7 @@ makeSettingMenu s option = translate' (-32,16) $
       where getColor a = if a == option then green else yellow
 
 makeMenu :: MenuOption a => a -> Picture
-makeMenu option = translate' (-32,16) $
+makeMenu option = translate' (-32,24) $
   pictures [ translate' (0,-16*i) $ menuOptionPicture (getColor o) name | 
     ((o, name), i) <- zip (optionsWithNames option) [0..]]
       where getColor a = if a == option then green else yellow 

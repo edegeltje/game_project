@@ -76,15 +76,15 @@ instance FromJSON RngConstruct where
   parseJSON = genericParseJSON defaultOptions
 
 instance FromJSON RngStuff where
-  parseJSON = withObject "RngStuff" $ \v -> 
-    let rngconst = v .: "RngConst" in
+  parseJSON = withObject "rngStuff" $ \v -> 
+    let rngconst = v .: "rngConst" in
       hydrateRngStuff . initialiseRngState <$> rngconst 
       -- reminder: <$> :: (a->b) -> f a -> f b
       --           <*> :: f (a -> b) -> f a -> f b
       -- the type of the result in this case is Maybe RngStuff
 
 instance FromJSON GameState where
-  parseJSON = withObject "GameState" $ \v ->
+  parseJSON = withObject "gameState" $ \v ->
     MkGameState <$> 
       v .: "menuState" <*>
       v .: "maze" <*>

@@ -298,7 +298,7 @@ level3Player :: PlayerEntity
 level3Player = MkPlayer (9,0) West Weak 1
 
 level3Entities :: EntityRecord
-level3Entities = MkEntityRecord level3Player level3Enemies level3Fruits Scatter
+level3Entities = MkEntityRecord level3Player level3Enemies level3Fruits Scatter []
 
 level3GameState :: GameState
 level3GameState = 
