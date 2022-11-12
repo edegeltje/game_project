@@ -215,6 +215,15 @@ loadLevel i = do
   let parsedFile = decode inputFile
   return (fromJust parsedFile)
 
+saveGameState :: GameState -> IO ()
+saveGameState gs = B.writeFile "gamestates/savedGamestate.json" (encode gs)
+
+loadGameState :: IO GameState
+loadGameState = do
+  inputGs <- B.readFile "gamestates/savedGamestate.json"
+  let parsedGs = decode inputGs
+  return (fromJust parsedGs)
+
 -- saveGameState :: GameState -> IO ()
 -- saveGameState savedState = B.writeFile "savedState.json" (encode savedState)
 
