@@ -139,7 +139,7 @@ level1Enemies = [
 tupleslvl2 = [(x,y) | x<- [-22..22], y <- [-22..22]]
 
 level2Walls :: [(Int, Int)]
-level2Walls =  [(x,y) | x <- [-21..21], y <- [-21..21], abs (x `mod` 5) /= 0, abs (y `mod` 5) /= 0]
+level2Walls =  [(x,y) | x <- [-20..20], y <- [-20..20], abs (x `mod` 5) /= 0, abs (y `mod` 5) /= 0]
 
 printlvl2 :: [String]
 printlvl2 = map show level2Walls
