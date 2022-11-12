@@ -6,6 +6,7 @@ import Data.Maybe
 import Control.Monad.State.Lazy
 import Model
 import Model.Entities
+import Model.Menus
 
 import Controller.MoveEntities
 

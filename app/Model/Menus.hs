@@ -1,3 +1,4 @@
+
 {-# LANGUAGE DeriveGeneric #-}
 module Model.Menus where
 import Model.Settings (Settings (volume, gameSpeed))
@@ -5,9 +6,9 @@ import GHC.Generics
 
 data MenuState = PauseMenu PauseMenuState | StartMenu StartMenuState | Playing
   deriving (Show, Generic)
-data PauseMenuState = ContinueOption | PauseSettingOption SettingMenuState | ExitToStartOption | ExitToDesktopOption
+data PauseMenuState = ContinueOption | PauseSettingOption SettingMenuState | SaveOption | ExitToStartOption | ExitToDesktopOption
   deriving (Show, Eq, Generic)
-data StartMenuState = PlayOption | StartSettingOption SettingMenuState| LoadOption | ExitOption
+data StartMenuState = PlayOption | StartSettingOption SettingMenuState| LoadOption | LoadGameOption| ExitOption
   deriving (Show, Eq, Generic)
 data SettingMenuState = VolumeOption | SpeedOption | SuperMenu
   deriving (Show, Eq, Generic)
@@ -22,6 +23,7 @@ instance MenuOption PauseMenuState where
   optionsWithNames = const [
     (ContinueOption, "Continue"),
     (PauseSettingOption SuperMenu, "Settings"),
+    (SaveOption, "Save Game"),
     (ExitToStartOption, "Exit To Start"),
     (ExitToDesktopOption, "Exit To Desktop")
     ]
@@ -34,6 +36,7 @@ instance MenuOption StartMenuState where
     (PlayOption,"Play"),
     (StartSettingOption SuperMenu, "Settings"),
     (LoadOption, "Load level"),
+    (LoadGameOption, "Load Saved Game"),
     (ExitOption, "Exit")
     ]
   menuName (StartSettingOption SuperMenu) = "Start"
@@ -54,3 +57,5 @@ getSettingOptions s = [
   ]
 
 
+data AnimationState = WinScreen Float | NoAnimation | GameOver Float
+  deriving (Show, Generic)
