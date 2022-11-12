@@ -52,7 +52,7 @@ testGameState = MkGameState
   InputNeutral 
   0
   (MkSettings 0 0)
-  testRngSeed
+  $ hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 
 
@@ -102,7 +102,7 @@ level1Walls = [((-16, -18), (-12, -12)), ((12, 12), (16, 18)), ((-16, 12), (-12,
                ((-23, -14), (-19, -9)), ((19, -14), (23,-9)), ((19, 9), (23,14)), ((-23, 9), (-19,14))]
 
 level1SmallDots :: [(Int, Int)]
-level1SmallDots = [(x,24) | x <- [-23..23], not (x == 0)] ++ [(x,-24) | x <- [-23..23], not (x == 0)] ++ [(x,17) | x <- [-11..11], not (x == 0)] ++ [(x,-17) | x <- [-11..11], not (x == 0)]
+level1SmallDots = [(x,24) | x <- [-23..23], x /= 0] ++ [(x,-24) | x <- [-23..23], x /= 0] ++ [(x,17) | x <- [-11..11], x /= 0] ++ [(x,-17) | x <- [-11..11], x /= 0]
                   ++ [(x,y) | x <- [12..22], y <- [-1..1]] ++ [(x,y) | x <- [-22..(-12)], y <- [-1..1]]
 
 level1PowerDots :: [(Int, Int)]
@@ -139,7 +139,7 @@ level1Enemies = [
 tupleslvl2 = [(x,y) | x<- [-22..22], y <- [-22..22]]
 
 level2Walls :: [(Int, Int)]
-level2Walls =  [(x,y) | x <- [-20..20], y <- [-20..20], abs (x `mod` 5) /= 0, abs (y `mod` 5) /= 0]
+level2Walls =  [(x,y) | x <- [-21..21], abs (x `mod` 5) /= 0, y <- [-21..21], abs (y `mod` 5) /= 0]
 
 printlvl2 :: [String]
 printlvl2 = map show level2Walls
@@ -155,11 +155,11 @@ addSmallDotslvl2 content ((x,y):xs) | (x,y) `elem` map fst content || abs x == 2
 level2PowerDots :: [((Int, Int), BottomLayerContent)]
 level2PowerDots = [((-20,21), PowerDot), ((21,20), PowerDot), ((5,-21), PowerDot), ((21,-10), PowerDot), ((-21,-15), PowerDot)]
 
-testMaze' = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+testMaze' = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
-level1Maze = DM.fromList $ addEmpty (((buildBorder 25) ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
+level1Maze = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
-level2Maze = DM.fromList $ addEmpty (addSmallDotslvl2 ( level2PowerDots ++ (buildBorder 22) ++ buildLevel2Walls) tupleslvl2) tupleslvl2
+level2Maze = DM.fromList $ addEmpty (addSmallDotslvl2 ( level2PowerDots ++ buildBorder 22 ++ buildLevel2Walls) tupleslvl2) tupleslvl2
 
 level2Fruits :: [Fruit]
 level2Fruits = [
@@ -214,11 +214,13 @@ testEntities = MkEntityRecord testPlayer' testEnemies testFruits Scatter
 level1GameState :: GameState
 level1GameState = 
   MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) testRngSeed
+    Playing level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 8) $ 
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 calcGameStateLevel1 :: Float -> GameState
 calcGameStateLevel1 t = MkGameState
-    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) testRngSeed
+    Playing level1Maze 1 2 level1Entities InputNeutral t (MkSettings 1 8) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 level1View = do
   fs <- fruitSpritesIO
@@ -234,11 +236,13 @@ level2Entities = MkEntityRecord level2Player level2Enemies level2Fruits Scatter
 level2GameState :: GameState
 level2GameState = 
   MkGameState
-    Playing level2Maze 1 2 level2Entities InputNeutral 0 (MkSettings 1 8) testRngSeed
+    Playing level2Maze 1 2 level2Entities InputNeutral 0 (MkSettings 1 8) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 calcGameStateLevel2 :: Float -> GameState
 calcGameStateLevel2 t = MkGameState
-    Playing level2Maze 1 2 level2Entities InputNeutral t (MkSettings 1 8) testRngSeed
+    Playing level2Maze 1 2 level2Entities InputNeutral t (MkSettings 1 8) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 level2View = do
   fs <- fruitSpritesIO
@@ -249,11 +253,13 @@ level2View = do
 testGameState' :: GameState
 testGameState' = 
   MkGameState
-    Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) testRngSeed
+    Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) $ 
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
-    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1) testRngSeed
+    Playing testMaze' 1 2 testEntities InputNeutral t (MkSettings 1 1) $
+      hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0
 
 testView = do
   fs <- fruitSpritesIO

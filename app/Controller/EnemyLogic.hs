@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use when" "Use void" #-}
 module Controller.EnemyLogic where
 
@@ -9,6 +10,7 @@ import Controller.MoveEntities
 import Data.List
 import Controller.TimeManagement (checkPowerStateTimer, unScare)
 import Controller.MoveEntities (scareGhosts)
+import Model (forRngStuff)
 
 -- the original pac-man has a bit janky logic. 
 -- see https://www.youtube.com/watch?v=ataGotQ7ir8
@@ -111,7 +113,7 @@ setEnemyDirection e = do
   maze <- getMaze
   case enemyStatus e of
     Scared -> do
-      dir <- selectRandom [ pdir|pdir <- [North,East,South,West],
+      dir <- forRngStuff $ selectRandom [ pdir|pdir <- [North,East,South,West],
         dirPossible maze (position e) pdir,
         pdir /= oppositeDir (direction e) ]
       return $ setDirection e dir

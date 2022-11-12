@@ -5,6 +5,7 @@ import Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as A
 import qualified Data.Map as DM
 import Control.Monad.State.Lazy
+import Control.Monad
 import System.Random
 
 import Model.Entities (EntityRecord (enemies, fruits), Position, EnemyEntity, Fruit)
@@ -26,10 +27,32 @@ data GameState = MkGameState {
   inputBuffer :: !InputButton,
   time :: !Float,
   settings :: !Settings,
-  rngState :: !StdGen
+  rngStuff :: !RngStuff
   }
   deriving (Show, Generic)
 type Score = Int
+
+data RngStuff = MkRngStuff {
+  rngState :: !StdGen,
+  rngConstruct :: RngConstruct
+}
+
+instance Show RngStuff where
+  show a = show (rngConstruct a)
+
+data RngConstruct = MkRngConst {
+  rngCount :: !Int,
+  rngSeed :: !Int
+}
+  deriving (Show, Generic)
+
+initialiseRngState :: RngConstruct -> (RngStuff,Int)
+initialiseRngState const = (
+  MkRngStuff (mkStdGen $ rngSeed const) const {rngCount = 0},
+  rngCount const)
+
+hydrateRngStuff :: (RngStuff, Int) -> RngStuff
+hydrateRngStuff (rng,num)= execState (replicateM num (selectRandom [1..4])) rng
 
 addScore :: Score -> State GameState ()
 addScore ds= do
@@ -42,7 +65,7 @@ forEntities action = do
   entities <- getEntities
   let result = runState action entities
   putEntities $ snd result
-  return $ fst result 
+  return $ fst result
 
 getSettings :: State GameState Settings
 getSettings = do
@@ -92,22 +115,59 @@ putTime t = do
   gs <- get
   put gs {time = t}
 
-getRNGState :: State GameState StdGen
-getRNGState = do
+getRngState :: State RngStuff StdGen
+getRngState = do
   rngState <$> get
-putRNGState :: StdGen -> State GameState ()
-putRNGState rng = do
+putRngState :: StdGen -> State RngStuff ()
+putRngState rng = do
+  rngstuff <- get
+  put rngstuff {rngState = rng}
+
+getRngStuff :: State GameState RngStuff
+getRngStuff = do
+  rngStuff <$> get
+putRngStuff :: RngStuff -> State GameState ()
+putRngStuff rngstuff = do
   gs <- get
-  put gs {rngState = rng}
+  put gs {rngStuff = rngstuff}
 
-selectRandom :: [a] -> State GameState a
+forRngStuff :: State RngStuff a -> State GameState a
+forRngStuff action = do
+  rngstuff <- getRngStuff
+  let result = runState action rngstuff
+  putRngStuff $ snd result
+  return $ fst result
+
+getRngConst :: State RngStuff RngConstruct
+getRngConst = do
+  rngConstruct <$> get
+
+putRngConst :: RngConstruct -> State RngStuff ()
+putRngConst a = do
+  stuff <- get
+  put stuff {rngConstruct = a}
+
+forRngConst :: State RngConstruct a -> State RngStuff a
+forRngConst action = do
+  rngConst <- getRngConst
+  let result = runState action rngConst
+  putRngConst $ snd result
+  return $ fst result
+
+upRngCounter :: State RngStuff ()
+upRngCounter = do
+  rngstuff@MkRngStuff {rngConstruct=rngConst@MkRngConst {rngCount=count}} <- get
+  put $ rngstuff {rngConstruct = rngConst {rngCount = count + 1}}
+
+
+
+selectRandom :: [a] -> State RngStuff a
 selectRandom as = do
-  rng <- getRNGState
+  rng <- getRngState
   let (roll,newRng) = uniformR (0,length as-1) rng
-  putRNGState newRng
+  putRngState newRng
+  upRngCounter
   return $ as !! roll
-
-
 
 type BottomLayer = DM.Map Position BottomLayerContent
 
@@ -150,4 +210,4 @@ picturesIO =  (pictures <$>) . sequence
 
 magicNumber :: Int
 magicNumber = 42069
-testRngSeed = mkStdGen magicNumber
+
