@@ -6,8 +6,5 @@ data Settings = MkSettings{
   gameSpeed :: Float -- how many tiles can be traversed in a single second?
 }
   deriving (Show, Generic)
-  -- something something sound volume?
-  -- something something keybindings?
-  -- something something fullscreen?
 
 tILESIZE = 8 :: Float

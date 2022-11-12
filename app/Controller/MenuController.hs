@@ -17,6 +17,8 @@ navigatePauseMenu gs@MkGameState {menuState = PauseMenu ContinueOption} =
   flip eventPauseMenuContinue gs
 navigatePauseMenu gs@MkGameState {menuState = PauseMenu (PauseSettingOption SuperMenu)} =
   flip eventPauseMenuSetting gs
+navigatePauseMenu gs@MkGameState {menuState = PauseMenu SaveOption} =
+  flip eventPauseMenuSave gs
 navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToStartOption} =
   flip eventPauseMenuStart gs
 navigatePauseMenu gs@MkGameState {menuState = PauseMenu ExitToDesktopOption} =
@@ -35,13 +37,19 @@ eventPauseMenuContinue _ gs = return gs
 
 eventPauseMenuSetting :: InputButton -> GameState -> IO GameState
 eventPauseMenuSetting InputUp gs = return (gs {menuState = PauseMenu ContinueOption})
-eventPauseMenuSetting InputDown gs = return (gs {menuState = PauseMenu ExitToStartOption})
+eventPauseMenuSetting InputDown gs = return (gs {menuState = PauseMenu SaveOption})
 eventPauseMenuSetting InputSelect gs = return (gs {menuState = PauseMenu (PauseSettingOption VolumeOption)})
 eventPauseMenuSetting _ gs = return gs
 
+eventPauseMenuSave :: InputButton -> GameState -> IO GameState
+eventPauseMenuSave InputUp gs = return (gs {menuState = PauseMenu (PauseSettingOption SuperMenu)})
+eventPauseMenuSave InputDown gs = return (gs {menuState = PauseMenu ExitToStartOption})
+eventPauseMenuSave InputSelect gs = do
+                                    saveGameState gs
+                                    return gs
 
 eventPauseMenuStart :: InputButton -> GameState -> IO GameState
-eventPauseMenuStart InputUp gs = return (gs {menuState = PauseMenu (PauseSettingOption SuperMenu)})
+eventPauseMenuStart InputUp gs = return (gs {menuState = PauseMenu SaveOption})
 eventPauseMenuStart InputDown gs = return (gs {menuState = PauseMenu ExitToDesktopOption})
 eventPauseMenuStart InputSelect gs = return (gs {menuState = StartMenu PlayOption})
 eventPauseMenuStart _ gs = return gs
@@ -62,6 +70,8 @@ navigateStartMenu gs@MkGameState {menuState = StartMenu ExitOption} =
   flip eventStartMenuExit gs
 navigateStartMenu gs@MkGameState {menuState = StartMenu LoadOption} = 
   flip eventStartMenuLoad gs
+navigateStartMenu gs@MkGameState {menuState = StartMenu LoadGameOption} = 
+  flip eventStartMenuLoadGame gs
 navigateStartMenu gs@MkGameState {menuState = StartMenu (StartSettingOption _)} =
   navigateSettingMenu gs
 navigateStartMenu gs = const $ return gs
@@ -80,15 +90,20 @@ eventStartMenuSetting _ gs = return gs
 
 eventStartMenuLoad :: InputButton -> GameState -> IO GameState
 eventStartMenuLoad InputUp gs = return (gs {menuState = StartMenu (StartSettingOption SuperMenu)})
-eventStartMenuLoad InputDown gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuLoad InputDown gs = return (gs {menuState = StartMenu LoadGameOption})
 eventStartMenuLoad InputLeft gs = return (gs {level = level gs - 1})
 eventStartMenuLoad InputRight gs = return (gs {level = level gs + 1})
 eventStartMenuLoad InputSelect gs = do
                                     lvl <- loadLevel (level gs)
                                     return $ applyLevel lvl gs 
 
+eventStartMenuLoadGame :: InputButton -> GameState -> IO GameState
+eventStartMenuLoadGame InputUp gs = return (gs {menuState = StartMenu LoadOption})
+eventStartMenuLoadGame InputDown gs = return (gs {menuState = StartMenu ExitOption})
+eventStartMenuLoadGame InputSelect gs = do loadGameState
+
 eventStartMenuExit :: InputButton -> GameState -> IO GameState
-eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu LoadOption})
+eventStartMenuExit InputUp gs = return (gs {menuState = StartMenu LoadGameOption})
 eventStartMenuExit InputDown gs = return (gs {menuState = StartMenu PlayOption}) 
 eventStartMenuExit InputSelect gs = exitSuccess
 eventStartMenuExit _ gs = return gs

@@ -141,7 +141,7 @@ level1Enemies = [
 tupleslvl2 = [(x,y) | x<- [-22..22], y <- [-22..22]]
 
 level2Walls :: [(Int, Int)]
-level2Walls =  [(x,y) | x <- [-21..21], abs (x `mod` 5) /= 0, y <- [-21..21], abs (y `mod` 5) /= 0]
+level2Walls =  [(x,y) | x <- [-20..20], abs (x `mod` 5) /= 0, y <- [-20..20], abs (y `mod` 5) /= 0]
 
 printlvl2 :: [String]
 printlvl2 = map show level2Walls
@@ -157,11 +157,50 @@ addSmallDotslvl2 content ((x,y):xs) | (x,y) `elem` map fst content || abs x == 2
 level2PowerDots :: [((Int, Int), BottomLayerContent)]
 level2PowerDots = [((-20,21), PowerDot), ((21,20), PowerDot), ((5,-21), PowerDot), ((21,-10), PowerDot), ((-21,-15), PowerDot)]
 
+tupleslvl3 = [(x,y) | x<- [-25..25], y <- [-25..25]]
+level3Walls :: [((Int, Int), (Int, Int))]
+level3Walls = [((-10,14), (10,16)), ((-1,10), (1,14)), ((14, -10), (16, 10)), ((10, -1), (14,1)), ((-10,-16), (10,-14)), ((-1,-14), (1,-10)), ((-16, -10), (-14, 10)), ((-14, -1), (-10,1)),
+                ((-7,-7), (7,7)),
+                ((-18,20), (-8, 23)), ((8,20), (18,23)), ((-18, -23), (-8, -20)), ((8, -23), (18,-20))]
+
+buildLevel3Walls :: [((Int, Int), BottomLayerContent)]
+buildLevel3Walls = concatMap (uncurry buildWall) level3Walls
+
+level3SmallDots :: [(Int, Int)]
+level3SmallDots = [(x,y) | x <- [-24..(-17)], y <- [-10..10]] ++ [(x,y) | x <- [17..24], y <- [-10..10]]
+
+level3PowerDots :: [((Int, Int), BottomLayerContent)]
+level3PowerDots = [((-13,24), PowerDot), ((13,24), PowerDot), ((-13,-24), PowerDot), ((13,-24), PowerDot)]
+
+placeLevel3SmallDots :: [((Int, Int), BottomLayerContent)]
+placeLevel3SmallDots = map (\(x,y) -> ((x,y), SmallDot)) level3SmallDots
+
 testMaze' = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
 level1Maze = DM.fromList $ addEmpty ((buildBorder 25 ++ buildLevel1Walls) ++ placeLevel1PowerDots ++ placeLevel1SmallDots) tuples
 
 level2Maze = DM.fromList $ addEmpty (addSmallDotslvl2 ( level2PowerDots ++ buildBorder 22 ++ buildLevel2Walls) tupleslvl2) tupleslvl2
+
+level3Maze = DM.fromList $ addEmpty (buildBorder 25 ++ buildLevel3Walls ++ placeLevel3SmallDots ++ level3PowerDots) tupleslvl3
+
+level3Fruits ::[Fruit]
+level3Fruits = [
+  MkFruit Cherry     (2,13)  200,
+  MkFruit Bell       (-2,13)  200,
+  MkFruit Apple      (2,-13)  200,
+  MkFruit Galaxian   (-2,-13)  200,
+  MkFruit Key        (13,2) 200,
+  MkFruit Melon      (13,-2) 200,
+  MkFruit Orange     (-13,2) 200,
+  MkFruit Strawberry (-13,-2) 200]
+
+level3Enemies :: [EnemyEntity]
+level3Enemies = [
+  MkEnemy (24,24) (0,0) North Inky Alive 1,
+  MkEnemy (24,-24) (0,0) East Pinky Alive 1,
+  MkEnemy (-24,24) (0,0) West Blinky Alive 1,
+  MkEnemy (-24,-24) (0,0) South Clyde Alive 1
+  ]
 
 level2Fruits :: [Fruit]
 level2Fruits = [
@@ -202,7 +241,7 @@ testFruits = [
   MkFruit Strawberry (13,3) 60]
 
 testPlayer' :: PlayerEntity
-testPlayer' = MkPlayer (15,1) West Weak 1
+testPlayer' = MkPlayer (9,0) West Weak 1
 
 level1Player :: PlayerEntity
 level1Player = MkPlayer (15,1) West Weak 1
@@ -255,13 +294,43 @@ level2View = do
   animateIO window black
     (return . view fs . calcGameStateLevel2) (const $ return ())
 
+level3Player :: PlayerEntity
+level3Player = MkPlayer (9,0) West Weak 1
+
+level3Entities :: EntityRecord
+level3Entities = MkEntityRecord level3Player level3Enemies level3Fruits Scatter
+
+level3GameState :: GameState
+level3GameState = 
+  MkGameState
+    Playing level3Maze 1 2 level3Entities InputNeutral 0 (MkSettings 1 10)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
+
+calcGameStateLevel3 :: Float -> GameState
+calcGameStateLevel3 t = MkGameState
+    Playing level3Maze 1 2 level3Entities InputNeutral t (MkSettings 1 10)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      NoAnimation
+
+level3View = do
+  fs <- fruitSpritesIO
+  animateIO window black
+    (return . view fs . calcGameStateLevel3) (const $ return ())
+
 
 testGameState' :: GameState
 testGameState' = 
   MkGameState
     Playing level2Maze 1 2 testEntities InputNeutral 0 (MkSettings 1 1) 
-      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0)
+      (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0) 
       NoAnimation
+
+startGameState :: GameState
+startGameState =
+  MkGameState (StartMenu PlayOption) level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 10)
+    (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0) 
+    NoAnimation
 
 calcGameState :: Float -> GameState
 calcGameState t = MkGameState
