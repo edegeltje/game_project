@@ -25,12 +25,7 @@ baz = putStrLn "baz function in View"
 
 view :: FruitSprites -> GameState -> Picture
 view fs gs@MkGameState {menuState = Playing} = VG.view fs gs
-view fs gs = pictures [VM.view gs
-  ,color white $ translate' (-30,-10) $ scale 0.2 0.2 $ text $ show $ inputBuffer gs,
-  color white $ translate' (-30,-30) $ scale 0.2 0.2 $ text $ show $ menuState gs
-  ]
-
-
+view fs gs = VM.view gs
 testPlayer :: PlayerEntity
 testPlayer = MkPlayer 
       (0,0) 
@@ -328,7 +323,7 @@ testGameState' =
 
 startGameState :: GameState
 startGameState =
-  MkGameState (StartMenu PlayOption) level1Maze 1 2 level1Entities InputNeutral 0 (MkSettings 1 10)
+  MkGameState (StartMenu PlayOption) level1Maze 1 1 level1Entities InputNeutral 0 (MkSettings 1 5)
     (hydrateRngStuff $ initialiseRngState $ MkRngConst magicNumber 0) 
     NoAnimation
 

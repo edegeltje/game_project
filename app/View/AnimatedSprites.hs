@@ -83,9 +83,7 @@ animateGhost ghost time = pictures [
   color ghostColor ghostTop,
   color ghostColor ghostBottom,
   translate' (0.5, 1)  eye,
-  translate' (1.5, 1) eye,
-  color ghostColor $ translate' (toFloatTuple $ ((-1) `intTimes` position ghost) `addPos` (1,1)
-    `addPos` enemyTarget ghost) targetPicture] where
+  translate' (1.5, 1) eye] where
     ghostColor = case enemyMovementType ghost of
       Blinky -> red
       Inky   -> blue
@@ -94,7 +92,6 @@ animateGhost ghost time = pictures [
     dir = direction ghost
     ghostBottom = if mod' (time/openingtime) 1 > 0.5 then ghostBottom1 else ghostBottom2
     eye = dirToEye dir
-    targetPicture = circleSolid' 1
 
 instance Renderable EnemyEntity where
   getSprite = const $ (translate' (-1,-1) .) . animateGhost

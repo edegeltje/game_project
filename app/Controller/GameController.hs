@@ -95,7 +95,8 @@ simulationStep = do
 heLives :: Bool -> State GameState ()
 heLives poweredUp= do
   updatePacDirection
-  setEnemyDirections poweredUp
+  switch <- forEntities checkEnemyPatternTimer
+  setEnemyDirections poweredUp switch
   return ()
 
 heDies :: State GameState ()

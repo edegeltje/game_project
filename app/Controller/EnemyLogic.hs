@@ -8,7 +8,7 @@ import Control.Monad.State.Lazy
 import qualified Data.Map as DM
 import Controller.MoveEntities
 import Data.List
-import Controller.TimeManagement (checkPowerStateTimer, unScare)
+import Controller.TimeManagement (checkPowerStateTimer, unScare, turnAround)
 import Controller.MoveEntities (scareGhosts)
 import Model (forRngStuff)
 
@@ -22,15 +22,15 @@ wankyDirToPos dir = case dir of
   dir -> dirToPos dir
 
 deadHome :: Position 
-deadHome = (10,10)
+deadHome = (0,0)
 clydeHome :: Position
-clydeHome = (0,0)
+clydeHome = (-24,-24)
 blinkyHome :: Position
-blinkyHome = (20,20)
+blinkyHome = (24,24)
 inkyHome :: Position
-inkyHome = (20,0)
+inkyHome = (24,-24)
 pinkyHome :: Position
-pinkyHome = (0,20)
+pinkyHome = (-24,24)
 
 calculateBlinkyChaseTarget :: GameState -> Position
 calculateBlinkyChaseTarget = position . player . entities
@@ -119,20 +119,24 @@ setEnemyDirection e = do
       return $ setDirection e dir
     _ -> return $ setDirection e $ calculateTargetDirection maze e
     
-setEnemyDirections :: Bool -> State GameState ()
-setEnemyDirections poweredUp = do
-  if poweredUp 
-    then forEntities scareGhosts
-    else return ()
-  powerUpEnds <- forEntities checkPowerStateTimer
-  if powerUpEnds
+setEnemyDirections :: Bool -> Bool -> State GameState ()
+setEnemyDirections poweredUp switch = do
+  if switch 
     then
-      forEntities unScare
+      forEntities turnAround
     else do
-      enemies <- forEntities getEnemies
-      player <- forEntities getPlayer
-      updatedEnemies <- mapM (setEnemyTarget >=> setEnemyDirection ) enemies
-      -- >=> :: Monad m => (a-> m b) -> (b -> m c) (a -> m c)
-      -- basically, (.) but with MOAR MONAD
-      forEntities $ putEnemies updatedEnemies
+      if poweredUp 
+        then forEntities scareGhosts
+        else return ()
+      powerUpEnds <- forEntities checkPowerStateTimer
+      if powerUpEnds
+        then
+          forEntities unScare
+        else do
+          enemies <- forEntities getEnemies
+          player <- forEntities getPlayer
+          updatedEnemies <- mapM (setEnemyTarget >=> setEnemyDirection ) enemies
+          -- >=> :: Monad m => (a-> m b) -> (b -> m c) (a -> m c)
+          -- basically, (.) but with MOAR MONAD
+          forEntities $ putEnemies updatedEnemies
 

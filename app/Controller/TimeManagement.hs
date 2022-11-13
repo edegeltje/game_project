@@ -90,20 +90,18 @@ yeetBadFruits = do
   fruits <- getFruits
   putFruits [f | f<- fruits, goodFruit f]
 
-checkTimers :: State GameState ()
-checkTimers = do
-  forEntities checkPowerStateTimer
-  forEntities checkEnemyPatternTimer
 
-checkEnemyPatternTimer :: State EntityRecord ()
+checkEnemyPatternTimer :: State EntityRecord Bool
 checkEnemyPatternTimer = do
   er <- get
   let patseq = patternSequence er
       epat = enemyPattern er
   case patseq of
-    [] -> return ()
-    t :ts | t <0 -> put er {patternSequence = ts, enemyPattern = swapPattern epat} 
-          | otherwise -> return () 
+    [] -> return False
+    t :ts | t <0 -> do 
+      put er {patternSequence = ts, enemyPattern = swapPattern epat}
+      return True
+          | otherwise -> return False
 
 checkPowerStateTimer :: State EntityRecord Bool
 checkPowerStateTimer = do
@@ -159,6 +157,11 @@ unScare = do
     case estatus of
       Scared -> putEnemyStatus Alive
       _ -> return ()
+  turnAround
+
+turnAround :: State EntityRecord ()
+turnAround = do
+  forAllEnemies $ do
     dir <- getDirection
     putDirection $ oppositeDir dir
   return ()
