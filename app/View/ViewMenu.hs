@@ -52,4 +52,4 @@ startMenuPicture gs@MkGameState {menuState = StartMenu startOption} = showLevel 
 startMenuPicture _ = blank
 
 showLevel :: GameState -> Picture -> Picture
-showLevel gs p = pictures [p, color black $ translate' (32, -10) $ scale 0.5 0.5 $ text $ show $ level gs]
+showLevel gs p = pictures [p, color black $ translate' (32, -2) $ scale 0.5 0.5 $ text $ show $ level gs]

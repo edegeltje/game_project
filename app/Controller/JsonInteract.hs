@@ -229,10 +229,10 @@ chasePattern :: [Float]
 chasePattern = [30,80,30,80,20,4000,4]
 
 standardPlayer :: PlayerEntity
-standardPlayer = MkPlayer (15,1) West Weak 1
+standardPlayer = MkPlayer (10,2) West Weak 1
 
 saveLevel :: IO ()
-saveLevel = B.writeFile "levels/level2.json" (encode (gameStateToLevel level2GameState))
+saveLevel = B.writeFile "levels/level3.json" (encode (gameStateToLevel level3GameState))
 
 loadLevel :: Int -> IO Level
 loadLevel i = do
